@@ -10,6 +10,10 @@ const { reducer, actions } = createSlice({
     logs: [],
     positions: {},
     history: {},
+    // AJOUT CRITIQUE 1: Indicateur que l'application est en attente
+    initialized: false, 
+    // optionnel: si vous voulez un état 'en cours de chargement'
+    loading: true, 
   },
   reducers: {
     updateServer(state, action) {
@@ -17,6 +21,10 @@ const { reducer, actions } = createSlice({
     },
     updateUser(state, action) {
       state.user = action.payload;
+    },
+    // NOUVELLE FONCTION
+    setInitialized: (state) => {
+      state.initialized = true;
     },
     updateSocket(state, action) {
       state.socket = action.payload;

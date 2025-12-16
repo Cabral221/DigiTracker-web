@@ -52,10 +52,17 @@ const App = () => {
       const response = await fetch('/api/session');
       if (response.ok) {
         dispatch(sessionActions.updateUser(await response.json()));
+        // 1. Succès : Session vérifiée et utilisateur mis à jour
+        dispatch(sessionActions.setInitialized()); // <-- AJOUT CRITIQUE 1
       } else {
         window.sessionStorage.setItem('postLogin', pathname + search);
         navigate(newServer ? '/register' : '/login', { replace: true });
+        // 2. Échec/Redirection : La vérification est terminée, même si elle a échoué
+        dispatch(sessionActions.setInitialized()); // <-- AJOUT CRITIQUE 2
       }
+    }else{
+      // 3. Utilisateur déjà chargé : La vérification est implicitement terminée
+        dispatch(sessionActions.setInitialized()); // <-- AJOUT CRITIQUE 3
     }
     return null;
   }, []);

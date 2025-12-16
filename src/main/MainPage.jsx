@@ -16,6 +16,9 @@ import useFilter from './useFilter';
 import MainToolbar from './MainToolbar';
 import MainMap from './MainMap';
 import { useAttributePreference } from '../common/util/preferences';
+// Ajustez le chemin pour pointer vers votre fichier permission.js
+import { useIsSubscriber } from '../common/util/permissions';
+import Loader from '../common/components/Loader';
 
 const useStyles = makeStyles()((theme) => ({
   root: {
@@ -66,6 +69,10 @@ const useStyles = makeStyles()((theme) => ({
 }));
 
 const MainPage = () => {
+  // 1. Lire l'état d'initialisation de la session
+  //    (L'état qui devient true seulement après la vérification API)
+  const initialized = useSelector(state => state.session.initialized); 
+
   const { classes } = useStyles();
   const dispatch = useDispatch();
   const theme = useTheme();
@@ -101,6 +108,63 @@ const MainPage = () => {
   }, [desktop, mapOnSelect, selectedDeviceId]);
 
   useFilter(keyword, filter, filterSort, filterMap, positions, setFilteredDevices, setFilteredPositions);
+
+  // =======================================================
+  // ⛔ ÉTAPE CRITIQUE 1 : GESTION DU CHARGEMENT
+  // =======================================================
+  if (!initialized) {
+      // Afficher un spinner (Loader) tant que nous n'avons pas la réponse de session
+      return (<Loader />);
+  }
+  // L'exécution passe au-delà d'ici SEULEMENT quand initialized est TRUE.
+
+  // =======================================================
+  // ✅ ÉTAPE CRITIQUE 2 : VÉRIFICATION DE LA PERMISSION
+  // =======================================================
+  // Le hook est exécuté avec les données utilisateur complètes (y compris isSubscriber).
+  const hasAccess = useIsSubscriber();
+
+  // Si l'utilisateur n'a pas accès, affichez un message ou redirigez-le
+  if (!hasAccess) {
+    // 2. Rendre le message d'abonnement au lieu de la carte
+    return (
+    <>
+      <section className="relative z-10 bg-primary py-[120px]">
+        <div className="container mx-auto">
+          <div className="-mx-4 flex">
+            <div className="w-full px-4">
+              <div className="mx-auto max-w-[400px] text-center">
+                <h2 className="mb-2 text-[50px] font-bold leading-none text-white sm:text-[80px] md:text-[100px]">
+                  Abonnez-vous
+                </h2>
+                <h4 className="mb-3 text-[22px] font-semibold leading-tight text-white">
+                  Oops! Vous n'avez pas accès à cette page.
+                </h4>
+                <p className="mb-8 text-lg text-white">
+                  Pour accéder à cette fonctionnalité, veuillez vous abonner à notre service premium.
+                </p>
+                <a
+                  href="javascript:void(0)"
+                  className="inline-block rounded-lg border border-white px-8 py-3 text-center text-base font-semibold text-white transition hover:bg-white hover:text-primary"
+                >
+                  Go To Home
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="absolute left-0 top-0 -z-10 flex h-full w-full items-center justify-between space-x-5 md:space-x-8 lg:space-x-14">
+          <div className="h-full w-1/3 bg-gradient-to-t from-[#FFFFFF14] to-[#C4C4C400]"></div>
+          <div className="flex h-full w-1/3">
+            <div className="h-full w-1/2 bg-gradient-to-b from-[#FFFFFF14] to-[#C4C4C400]"></div>
+            <div className="h-full w-1/2 bg-gradient-to-t from-[#FFFFFF14] to-[#C4C4C400]"></div>
+          </div>
+          <div className="h-full w-1/3 bg-gradient-to-b from-[#FFFFFF14] to-[#C4C4C400]"></div>
+        </div>
+      </section>
+    </>
+    );
+  }
 
   return (
     <div className={classes.root}>
