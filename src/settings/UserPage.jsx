@@ -402,12 +402,15 @@ const UserPage = () => {
               </FormGroup>
             </AccordionDetails>
           </Accordion>
+          {/* Edition des attributs */}
           <EditAttributesAccordion
             attribute={attribute}
             attributes={item.attributes}
             setAttributes={(attributes) => setItem({ ...item, attributes })}
             definitions={{ ...commonUserAttributes, ...userAttributes }}
             focusAttribute={attribute}
+            // NOUVELLE PROP AJOUTÉE ICI :
+            editingId={item.id}
           />
           {registrationEnabled && item.id === currentUser.id && !manager && (
             <Accordion>

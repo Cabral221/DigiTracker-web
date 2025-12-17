@@ -1,6 +1,20 @@
 import { useMemo } from 'react';
 
 export default (t) => useMemo(() => ({
+  // --- Nouveaux attributs d'abonnement ---
+  isSubscriber: {
+    name: 'Abonné',
+    type: 'boolean',
+  },
+  subscriptionStartDate: {
+    name: 'Date de début d\'abonnement',
+    type: 'string', // Traccar stocke souvent les dates en string dans les attributs
+  },
+  subscriptionEndDate: {
+    name: 'Date d\'expiration',
+    type: 'string',
+  },
+  // ---------------------------------------
   telegramChatId: {
     name: t('attributeTelegramChatId'),
     type: 'string',
