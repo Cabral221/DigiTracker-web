@@ -20,6 +20,7 @@ import { useAttributePreference } from '../common/util/preferences';
 import { useIsSubscriber } from '../common/util/permissions';
 import Loader from '../common/components/Loader';
 import SubscriptionPrompt from '../common/components/SubscriptionPrompt';
+import SubscriptionBanner from '../common/components/SubscriptionBanner';
 
 const useStyles = makeStyles()((theme) => ({
   root: {
@@ -135,6 +136,7 @@ const MainPage = () => {
 
   return (
     <div className={classes.root}>
+      <SubscriptionBanner />
       {desktop && (
         <MainMap
           filteredPositions={filteredPositions}
