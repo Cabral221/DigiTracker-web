@@ -33,27 +33,33 @@ export const useRestriction = (key) => useSelector((state) => {
  * Cette vérification est basée sur l'attribut 'isSubscriber' stocké
  * sur l'objet utilisateur du serveur Traccar.
  */
-export const useIsSubscriber = () => useSelector((state) => {
+export const useIsSubscriber = () => {
+  const user = useSelector((state) => state.session.user);
 
-  const user = state.session.user; 
-  // Par défaut, si l'utilisateur n'est pas chargé, nous supposons 'false' ou 'true'
-  // selon votre politique de sécurité (ici, 'false' est plus sûr).
+  // 1. Si l'utilisateur n'est pas chargé, on refuse l'accès par défaut
   if (!user) {
     return false;
   }
 
-  // Si l'utilisateur est administrateur, on lui donne toujours l'accès.
-  // (Optionnel : si vous voulez que les administrateurs voient toujours la carte)
-  const isAdmin = user.administrator; 
-
-  // 2. LOGIQUE CRITIQUE : Accéder à l'attribut
-  let isSubscriberAccess = false;
-
-  // Vérifier si l'objet attributes existe et contient notre clé
-  if (user.attributes && user.attributes.isSubscriber) {
-      // La valeur doit être comparée à la chaîne "true" (Traccar stocke les attributs comme des chaînes)
-      isSubscriberAccess = user.attributes.isSubscriber === 'true';
+  // 2. Les administrateurs ont toujours accès
+  if (user.administrator) {
+    return true;
   }
 
-  return isAdmin || isSubscriberAccess;
-});
+  // 3. Récupération des attributs (ceux que StripeResource enregistre)
+  const isSubscriber = user.attributes.isSubscriber;
+  const endDateStr = user.attributes.subscriptionEndDate;
+
+  // 4. Vérification du statut (on compare avec la chaîne "true")
+  if (isSubscriber !== 'true' || !endDateStr) {
+    return false;
+  }
+
+  // 5. Comparaison de la date d'expiration
+  // On récupère la date du jour au format ISO (YYYY-MM-DD)
+  const today = new Date().toISOString().split('T')[0];
+
+  // En JavaScript, comparer deux chaînes "YYYY-MM-DD" fonctionne parfaitement 
+  // pour savoir laquelle est chronologiquement après l'autre.
+  return endDateStr >= today;
+};
