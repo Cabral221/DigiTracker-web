@@ -1,25 +1,34 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux'; // Ajout de useSelector
 import { useNavigate } from 'react-router-dom';
-import { Button, Typography, Box, Paper, Stack } from '@mui/material';
+import { Button, Typography, Box, Paper, Stack, Divider } from '@mui/material';
 import PaymentIcon from '@mui/icons-material/Payment';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
-import { sessionActions } from '../../store/session'; // Vérifiez le chemin vers votre store
+import SecurityIcon from '@mui/icons-material/Security';
+import { sessionActions } from '../../store'; // Ajusté selon votre import MainPage
 
 const SubscriptionPrompt = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  
+  // 1. On récupère l'utilisateur pour pré-remplir l'email sur Stripe
+  const user = useSelector((state) => state.session.user);
 
   const handleSubscribe = () => {
-    window.location.href = 'https://buy.stripe.com/test_00wcMYe9Y4FJ11a3WL0ZW00';
+    const stripeLink = 'https://buy.stripe.com/test_00wcMYe9Y4FJ11a3WL0ZW00';
+    // On ajoute l'email en paramètre pour simplifier le paiement du client
+    const emailParam = user && user.email ? `?prefilled_email=${encodeURIComponent(user.email)}` : '';
+    window.location.href = stripeLink + emailParam;
   };
 
   const handleLogout = async () => {
-    // 1. Appel à l'API de déconnexion de Traccar
-    await fetch('/api/session', { method: 'DELETE' });
-    // 2. Mise à jour de l'état Redux pour rediriger vers la page de login
-    dispatch(sessionActions.updateUser(null));
-    navigate('/login');
+    try {
+      await fetch('/api/session', { method: 'DELETE' });
+      dispatch(sessionActions.updateUser(null));
+      navigate('/login');
+    } catch (error) {
+      console.error("Erreur déconnexion:", error);
+    }
   };
 
   return (
@@ -28,37 +37,53 @@ const SubscriptionPrompt = () => {
       justifyContent="center"
       alignItems="center"
       height="100vh"
-      bgcolor="#f5f5f5"
+      bgcolor="#eceff1" // Couleur de fond légèrement plus pro
     >
-      <Paper elevation={3} sx={{ padding: 4, textAlign: 'center', maxWidth: 450 }}>
-        <Typography variant="h5" gutterBottom sx={{ fontWeight: 'bold' }}>
-          Abonnement Requis 🚀
+      <Paper elevation={6} sx={{ padding: 5, textAlign: 'center', maxWidth: 480, borderRadius: 3 }}>
+        <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: '#1976d2' }}>
+          DigiTracker Sénégal 🚌
         </Typography>
-        <Typography variant="body1" color="textSecondary" paragraph>
-          Accédez à la cartographie en temps réel des bus de transport urbain et au plateforme de suivi illimité de vos appareils.
+        
+        <Typography variant="h6" sx={{ mt: 2, mb: 1 }}>
+          Abonnement Annuel Requis
         </Typography>
 
-        <Stack direction="row" spacing={2} justifyContent="center" sx={{ mt: 3 }}>
-          {/* Bouton S'abonner */}
+        <Typography variant="body1" color="textSecondary" paragraph>
+          Accédez à la cartographie en temps réel et au suivi illimité de vos appareils pour seulement 1 an de service.
+        </Typography>
+
+        <Box bgcolor="#e3f2fd" p={2} borderRadius={2} mb={3}>
+            <Stack direction="row" spacing={1} alignItems="center" justifyContent="center">
+                <SecurityIcon color="primary" fontSize="small" />
+                <Typography variant="caption" color="primary" sx={{ fontWeight: 'bold' }}>
+                    PAIEMENT SÉCURISÉ VIA STRIPE
+                </Typography>
+            </Stack>
+        </Box>
+
+        <Divider sx={{ mb: 3 }} />
+
+        <Stack spacing={2}>
           <Button
             variant="contained"
             color="primary"
             size="large"
+            fullWidth
             startIcon={<PaymentIcon />}
             onClick={handleSubscribe}
+            sx={{ py: 1.5, fontSize: '1.1rem', borderRadius: 2 }}
           >
-            S'abonner
+            S'abonner maintenant
           </Button>
 
-          {/* Bouton Déconnexion */}
           <Button
-            variant="outlined"
-            color="error"
-            size="large"
+            variant="text"
+            color="inherit"
             startIcon={<ExitToAppIcon />}
             onClick={handleLogout}
+            sx={{ textTransform: 'none' }}
           >
-            Déconnexion
+            Se déconnecter
           </Button>
         </Stack>
       </Paper>
