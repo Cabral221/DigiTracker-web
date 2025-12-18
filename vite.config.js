@@ -8,8 +8,8 @@ export default defineConfig(() => ({
   server: {
     port: 3000,
     proxy: {
-      '/api/socket': 'ws://localhost:3000',
-      '/api': 'http://localhost:3000',
+      '/api/socket': 'ws://localhost:8082',
+      '/api': 'http://localhost:8082',
     },
   },
   build: {
@@ -26,8 +26,8 @@ export default defineConfig(() => ({
         globPatterns: ['**/*.{js,css,html,woff,woff2,mp3}'],
       },
       manifest: {
-        short_name: '${title}',
-        name: '${description}',
+        short_name: 'DigiTracker',
+        name: 'Digitracker - Systéme de suivi',
         theme_color: '${colorPrimary}',
         icons: [
           {
