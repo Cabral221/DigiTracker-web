@@ -18,6 +18,7 @@ import {
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { useSelector } from 'react-redux';
 import AddAttributeDialog from './AddAttributeDialog';
 import { useTranslation } from '../../common/components/LocalizationProvider';
 import { useAttributePreference } from '../../common/util/preferences';
@@ -27,9 +28,13 @@ import {
 import useFeatures from '../../common/util/useFeatures';
 import useSettingsStyles from '../common/useSettingsStyles';
 
-const EditAttributesAccordion = ({ attribute, attributes, setAttributes, definitions, focusAttribute }) => {
+const EditAttributesAccordion = ({ attribute, attributes, setAttributes, definitions, focusAttribute, editingId }) => {
   const { classes } = useSettingsStyles();
   const t = useTranslation();
+
+  // 1. Récupérer l'utilisateur courant (pour la vérification admin)
+  const currentUser = useSelector(state => state.session.user);
+  const isAdmin = currentUser.administrator;
 
   const features = useFeatures();
 
@@ -146,6 +151,30 @@ const EditAttributesAccordion = ({ attribute, attributes, setAttributes, definit
       }
     }
   };
+  
+  // 2. Déterminer QUI est édité (Hypothèse : l'ID est dans l'objet 'attributes' du formulaire)
+  // Si ce composant est utilisé dans le contexte d'édition d'utilisateur, 'attributes' peut contenir l'ID.
+  const editingUserId = editingId; 
+  const isEditingSelf = currentUser && editingUserId && currentUser.id === editingUserId;
+    
+  // 3. Logique de Filtrage des Attributs
+  // On filtre la liste des clés d'attributs à afficher
+  const shouldShowAttribute = (key) => {
+    // Règle 1 : Si c'est l'Admin, on montre tout.
+    if (isAdmin) {
+        return true;
+    }
+    // Règle 2 : FILTRE DE SÉCURITÉ :
+    // On masque 'isSubscriber' ET on doit maintenant masquer les dates
+    const forbiddenKeys = ['isSubscriber', 'subscriptionStartDate', 'subscriptionEndDate'];
+
+    // Règle 3 : On masque 'isSubscriber' UNIQUEMENT si l'utilisateur n'est pas Admin ET qu'il s'édite lui-même.
+    if (forbiddenKeys.includes(key) && isEditingSelf) {
+        return false; // L'utilisateur ne verra JAMAIS ces champs
+    }
+    // Règle 4 : Afficher tous les autres attributs.
+    return true;
+  };
 
   return features.disableAttributes ? '' : (
     <Accordion defaultExpanded={!!attribute}>
@@ -155,7 +184,10 @@ const EditAttributesAccordion = ({ attribute, attributes, setAttributes, definit
         </Typography>
       </AccordionSummary>
       <AccordionDetails className={classes.details}>
-        {convertToList(attributes).map(({
+
+        {convertToList(attributes)
+        .filter(({ key }) => shouldShowAttribute(key))
+        .map(({
           key, value, type, subtype,
         }) => {
           if (type === 'boolean') {
