@@ -44,7 +44,9 @@ const MapPositions = ({ positions, onMapClick, onMarkerClick, showStatus, select
       name: device.name,
       fixTime: formatTime(position.fixTime, 'seconds'),
       category: mapIconKey(device.category),
-      color: showStatus ? position.attributes.color || getStatusColor(device.status) : 'neutral',
+      // Correction ici : On ignore les couleurs personnalisées des attributs
+      // pour forcer nos icônes SenBus (success/error/neutral)
+      color: showStatus ? getStatusColor(device.status) : 'neutral',
       rotation: position.course,
       direction: showDirection,
     };
