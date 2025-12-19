@@ -87,6 +87,8 @@ const MainPage = () => {
   const positions = useSelector((state) => state.session.positions);
   const [filteredPositions, setFilteredPositions] = useState([]);
   const selectedPosition = filteredPositions.find((position) => selectedDeviceId && position.deviceId === selectedDeviceId);
+  // AJOUTEZ CECI : On récupère notre nouveau filtre de groupe
+  const globalFilter = useSelector((state) => state.devices.filter);
 
   const [filteredDevices, setFilteredDevices] = useState([]);
 
@@ -96,7 +98,7 @@ const MainPage = () => {
     groups: [],
   });
   const [filterSort, setFilterSort] = usePersistedState('filterSort', '');
-  const [filterMap, setFilterMap] = usePersistedState('filterMap', false);
+  const [filterMap, setFilterMap] = usePersistedState('filterMap', true);
 
   const [devicesOpen, setDevicesOpen] = useState(desktop);
   const [eventsOpen, setEventsOpen] = useState(false);
@@ -109,7 +111,19 @@ const MainPage = () => {
     }
   }, [desktop, mapOnSelect, selectedDeviceId]);
 
-  useFilter(keyword, filter, filterSort, filterMap, positions, setFilteredDevices, setFilteredPositions);
+  useFilter(
+    keyword,
+    {
+      statuses: filter.statuses || [], // Sécurité : s'assure que statuses existe
+      groups: globalFilter.groups && globalFilter.groups.length > 0 
+        ? globalFilter.groups 
+        : (filter.groups || [])        // Sécurité : s'assure que groups existe
+    },
+    filterSort,
+    filterMap,
+    positions,
+    setFilteredDevices, setFilteredPositions
+  );
 
   // =======================================================
   // ⛔ ÉTAPE CRITIQUE 1 : GESTION DU CHARGEMENT
