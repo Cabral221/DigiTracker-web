@@ -1,5 +1,5 @@
 import {
-  useState, useCallback, useEffect,
+  useState, useCallback, useEffect, useMemo
 } from 'react';
 import { Paper } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
@@ -111,18 +111,23 @@ const MainPage = () => {
     }
   }, [desktop, mapOnSelect, selectedDeviceId]);
 
+  // 1. On crée un objet stable qui ne change QUE si les données changent vraiment
+  const memoizedFilter = useMemo(() => ({
+    statuses: filter.statuses || [],
+    groups: globalFilter.groups && globalFilter.groups.length > 0 
+      ? globalFilter.groups 
+      : (filter.groups || [])
+  }), [filter.statuses, filter.groups, globalFilter.groups]);
+
+  // 2. On passe cet objet stable au hook
   useFilter(
     keyword,
-    {
-      statuses: filter.statuses || [], // Sécurité : s'assure que statuses existe
-      groups: globalFilter.groups && globalFilter.groups.length > 0 
-        ? globalFilter.groups 
-        : (filter.groups || [])        // Sécurité : s'assure que groups existe
-    },
+    memoizedFilter, // Utilisation de l'objet mémorisé
     filterSort,
     filterMap,
     positions,
-    setFilteredDevices, setFilteredPositions
+    setFilteredDevices, 
+    setFilteredPositions
   );
 
   // =======================================================
@@ -147,6 +152,9 @@ const MainPage = () => {
       <SubscriptionPrompt />
     );
   }
+
+  console.log("Positions reçues :", Object.keys(positions).length);
+  console.log("Positions filtrées :", filteredPositions.length);
 
   return (
     <div className={classes.root}>
