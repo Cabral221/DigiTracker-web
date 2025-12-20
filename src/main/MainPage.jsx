@@ -81,7 +81,7 @@ const MainPage = () => {
 
   const desktop = useMediaQuery(theme.breakpoints.up('md'));
 
-  const mapOnSelect = useAttributePreference('mapOnSelect', true);
+  const mapOnSelect = useAttributePreference('mapOnSelect', false);
 
   const selectedDeviceId = useSelector((state) => state.devices.selectedId);
   const positions = useSelector((state) => state.session.positions);
@@ -102,6 +102,8 @@ const MainPage = () => {
 
   const [devicesOpen, setDevicesOpen] = useState(desktop);
   const [eventsOpen, setEventsOpen] = useState(false);
+
+  const [isManualSelection, setIsManualSelection] = useState(false);
 
   const onEventsClick = useCallback(() => setEventsOpen(true), [setEventsOpen]);
 
@@ -156,6 +158,13 @@ const MainPage = () => {
   console.log("Positions reçues :", Object.keys(positions).length);
   console.log("Positions filtrées :", filteredPositions.length);
 
+  // On intercepte le changement de sélection pour forcer l'affichage
+  useEffect(() => {
+    if (selectedDeviceId) {
+      setIsManualSelection(true);
+    }
+  }, [selectedDeviceId]);
+  
   return (
     <div className={classes.root}>
       <SubscriptionBanner />
@@ -203,13 +212,34 @@ const MainPage = () => {
         )}
       </div>
       <EventsDrawer open={eventsOpen} onClose={() => setEventsOpen(false)} />
-      {selectedDeviceId && (
-        <StatusCard
-          deviceId={selectedDeviceId}
-          position={selectedPosition}
-          onClose={() => dispatch(devicesActions.selectId(null))}
-          desktopPadding={theme.dimensions.drawerWidthDesktop}
-        />
+      {/* On affiche si :
+        1. Un appareil est sélectionné
+        ET (
+          C'est le seul appareil de la liste (ton exception pour 1 bus)
+          OU l'état isManualSelection est passé à vrai par le clic
+        )
+      */}
+      {selectedDeviceId && (filteredDevices.length === 1 || isManualSelection) && (
+        <div style={{ 
+          position: 'fixed', 
+          bottom: desktop ? '20px' : '100px',
+          left: desktop ? theme.dimensions.drawerWidthDesktop : '10px',
+          right: '10px',
+          zIndex: 4,
+          pointerEvents: 'none'
+        }}>
+          <div style={{ pointerEvents: 'auto' }}>
+            <StatusCard
+              deviceId={selectedDeviceId}
+              position={selectedPosition}
+              onClose={() => {
+                dispatch(devicesActions.selectId(null));
+                setIsManualSelection(false); 
+              }}
+              desktopPadding={0}
+            />
+          </div>
+        </div>
       )}
     </div>
   );

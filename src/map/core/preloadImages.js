@@ -1,4 +1,4 @@
-import { grey } from '@mui/material/colors';
+import { grey, green, red, blue } from '@mui/material/colors'; // Ajout de couleurs pour le thème
 import { createTheme } from '@mui/material';
 import { loadImage, prepareIcon } from './mapUtil';
 
@@ -27,9 +27,7 @@ import tramSvg from '../../resources/images/icon/tram.svg';
 import truckSvg from '../../resources/images/icon/truck.svg';
 import vanSvg from '../../resources/images/icon/van.svg';
 
-import busOnline from '../../resources/images/icon/bus-online.svg';
-import busOffline from '../../resources/images/icon/bus-offline.svg';
-import busNeutral from '../../resources/images/icon/bus-neutral.svg';
+// Note: On n'importe plus les bus-online/offline car on va colorer le busSvg standard
 
 export const mapIcons = {
   animal: animalSvg,
@@ -54,10 +52,6 @@ export const mapIcons = {
   tram: tramSvg,
   truck: truckSvg,
   van: vanSvg,
-  'bus-online': busOnline,
-  'bus-offline': busOffline,
-  'bus-neutral': busNeutral,
-  'bus-default': busNeutral, // Sécurité si le statut est inconnu
 };
 
 export const mapIconKey = (category) => {
@@ -74,9 +68,13 @@ export const mapIconKey = (category) => {
 
 export const mapImages = {};
 
+// On définit ici les couleurs que Traccar va appliquer sur les SVG
 const theme = createTheme({
   palette: {
-    neutral: { main: grey[500] },
+    success: { main: '#2ecc71' }, // Vert (Mouvement)
+    error: { main: '#e74c3c' },   // Rouge (Offline)
+    info: { main: '#3498db' },    // Bleu (Online/Statique)
+    neutral: { main: grey[500] }, // Gris (Inconnu)
   },
 });
 
@@ -85,28 +83,27 @@ export default async () => {
   mapImages.background = await prepareIcon(background);
   mapImages.direction = await prepareIcon(await loadImage(directionSvg));
 
+  // Liste des statuts que le moteur de carte utilise pour construire les clés d'images
+  const statuses = ['info', 'success', 'error', 'neutral', 'online', 'offline', 'unknown', 'selected'];
+
   await Promise.all(Object.keys(mapIcons).map(async (category) => {
     const results = [];
-    // On définit le mapping des couleurs Traccar vers vos fichiers
-    const busCustomIcons = {
-      success: busOnline,
-      error: busOffline,
-      neutral: busNeutral,
-      info: busOnline, // par défaut pour info
-    };
 
-    ['info', 'success', 'error', 'neutral'].forEach((color) => {
-      // SI la catégorie est 'bus' ET qu'on a une icône personnalisée pour cette couleur
-      const iconToLoad = (category === 'bus' && busCustomIcons[color]) 
-        ? busCustomIcons[color] 
-        : mapIcons[category];
+    statuses.forEach((status) => {
+      // Mapping pour faire correspondre le statut à une couleur du thème
+      const paletteMapping = {
+        success: 'success', 
+        info: 'info', online: 'info', selected: 'info',
+        error: 'error', offline: 'error',
+        neutral: 'neutral', unknown: 'neutral'
+      };
 
-      results.push(loadImage(iconToLoad).then((icon) => {
-        // Pour vos bus personnalisés, on peut passer 'null' pour le background 
-        // ou ne pas appliquer de filtre de couleur si vos SVG sont déjà colorés.
-        const colorValue = category === 'bus' ? null : theme.palette[color].main;
-        
-        mapImages[`${category}-${color}`] = prepareIcon(background, icon, colorValue);
+      const themeColor = paletteMapping[status] || 'neutral';
+      const colorValue = theme.palette[themeColor].main;
+
+      results.push(loadImage(mapIcons[category]).then((icon) => {
+        // prepareIcon va superposer le background + l'icône + la couleur
+        mapImages[`${category}-${status}`] = prepareIcon(background, icon, colorValue);
       }));
     });
     await Promise.all(results);
