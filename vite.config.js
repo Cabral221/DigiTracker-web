@@ -8,8 +8,18 @@ export default defineConfig(() => ({
   server: {
     port: 3000,
     proxy: {
-      '/api/socket': 'ws://localhost:8082',
-      '/api': 'http://localhost:8082',
+      '/api/socket': {
+        target: 'http://localhost:8085', // Utilisez http ici, Vite s'occupe de la conversion
+        ws: true,                        // Activation cruciale pour le temps réel
+        changeOrigin: true,
+        // Ajoute ceci pour éviter que Vite ne coupe la connexion trop vite
+        timeout: 30000, 
+        proxyTimeout: 30000,
+      },
+      '/api': {
+        target: 'http://localhost:8085',
+        changeOrigin: true,
+      },
     },
   },
   build: {
