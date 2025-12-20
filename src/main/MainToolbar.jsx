@@ -40,6 +40,7 @@ const MainToolbar = ({
   setFilterSort,
   filterMap,
   setFilterMap,
+  groups: externalGroups,
 }) => {
   const { classes } = useStyles();
   const theme = useTheme();
@@ -48,7 +49,9 @@ const MainToolbar = ({
 
   const deviceReadonly = useDeviceReadonly();
 
-  const groups = useSelector((state) => state.groups.items);
+  // On utilise les groupes externes s'ils sont fournis, sinon on prend le store
+  const internalGroups = useSelector((state) => state.groups.items);
+  const groups = externalGroups || internalGroups;
   const devices = useSelector((state) => state.devices.items);
 
   const toolbarRef = useRef();
@@ -143,9 +146,16 @@ const MainToolbar = ({
               onChange={(e) => setFilter({ ...filter, groups: e.target.value })}
               multiple
             >
-              {Object.values(groups).sort((a, b) => a.name.localeCompare(b.name)).map((group) => (
-                <MenuItem key={group.id} value={group.id}>{group.name}</MenuItem>
-              ))}
+              {/* AJOUT DU FILTRE ICI */}
+              {Object.values(groups)
+                // Filtre dynamique : on exclut le groupe racine par son nom
+                .filter((group) => group.name !== "Flotte SenBus")
+                .sort((a, b) => a.name.localeCompare(b.name))
+                .map((group) => (
+                  <MenuItem key={group.id} value={group.id}>
+                    {group.name}
+                  </MenuItem>
+                ))}
             </Select>
           </FormControl>
           <FormControl>

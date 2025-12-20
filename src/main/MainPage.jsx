@@ -90,6 +90,20 @@ const MainPage = () => {
   // AJOUTEZ CECI : On récupère notre nouveau filtre de groupe
   const globalFilter = useSelector((state) => state.devices.filter);
 
+  const user = useSelector((state) => state.session.user);
+  const groups = useSelector((state) => {
+    const allGroups = state.groups.items || {}; // Ajout du || {} pour éviter le crash
+    const filtered = {};
+    
+    Object.keys(allGroups).forEach(id => {
+      if (allGroups[id].name !== "Flotte SenBus") {
+        filtered[id] = allGroups[id];
+      }
+    });
+    
+    return filtered;
+  });
+
   const [filteredDevices, setFilteredDevices] = useState([]);
 
   const [keyword, setKeyword] = useState('');
@@ -114,12 +128,22 @@ const MainPage = () => {
   }, [desktop, mapOnSelect, selectedDeviceId]);
 
   // 1. On crée un objet stable qui ne change QUE si les données changent vraiment
-  const memoizedFilter = useMemo(() => ({
-    statuses: filter.statuses || [],
-    groups: globalFilter.groups && globalFilter.groups.length > 0 
+  const memoizedFilter = useMemo(() => {
+    // 1. Déterminer quels groupes sont sélectionnés
+    const selectedGroups = globalFilter.groups && globalFilter.groups.length > 0 
       ? globalFilter.groups 
-      : (filter.groups || [])
-  }), [filter.statuses, filter.groups, globalFilter.groups]);
+      : (filter.groups || []);
+
+    // 2. Filtrer pour exclure l'ID 1 (Le groupe racine "Flotte SenBus")
+    // On convertit en Number pour être sûr de la comparaison
+    const excludedGroupId = 1;
+    const filteredGroups = selectedGroups.filter(id => Number(id) !== excludedGroupId);
+
+    return {
+      statuses: filter.statuses || [],
+      groups: filteredGroups
+    };
+  }, [filter.statuses, filter.groups, globalFilter.groups]);
 
   // 2. On passe cet objet stable au hook
   useFilter(
@@ -155,6 +179,11 @@ const MainPage = () => {
     );
   }
 
+  // =======================================================
+  // 🔗 ÉTAPE CRITIQUE 3 : LIAISON AUTOMATIQUE (SaaS)
+  // =======================================================
+  // Logique déplacée côté Backend pour éviter les erreurs de permissions 400/403
+
   console.log("Positions reçues :", Object.keys(positions).length);
   console.log("Positions filtrées :", filteredPositions.length);
 
@@ -179,6 +208,7 @@ const MainPage = () => {
         <Paper square elevation={3} className={classes.header}>
           <MainToolbar
             filteredDevices={filteredDevices}
+            groups={groups}
             devicesOpen={devicesOpen}
             setDevicesOpen={setDevicesOpen}
             keyword={keyword}
@@ -202,7 +232,7 @@ const MainPage = () => {
             </div>
           )}
           <Paper square className={classes.contentList} style={devicesOpen ? {} : { visibility: 'hidden' }}>
-            <DeviceList devices={filteredDevices} />
+            <DeviceList devices={filteredDevices} groups={groups} />
           </Paper>
         </div>
         {desktop && (

@@ -16,14 +16,18 @@ const useStyles = makeStyles()((theme) => ({
   lineBadge: { '& .MuiBadge-badge': { right: -10, top: 13, border: `2px solid ${theme.palette.background.paper}`, padding: '0 4px' } }
 }));
 
-const DeviceList = ({ devices = [] }) => {
+const DeviceList = ({ devices = [], groups: externalGroups }) => {
   const { classes } = useStyles();
   const dispatch = useDispatch();
   const t = useTranslation();
   
-  // On récupère les groupes avec une valeur par défaut vide
-  const groups = useSelector((state) => state.groups.items || {});
-  const groupsArray = Object.values(groups);
+  // 2. Priorité aux groupes filtrés de MainPage, sinon fallback sur le store
+  const internalGroups = useSelector((state) => state.groups.items || {});
+  const groups = externalGroups || internalGroups;
+  // 3. On transforme en tableau et on filtre immédiatement le groupe racine par son nom
+  const groupsArray = Object.values(groups).filter(
+    (group) => group.name !== "Flotte SenBus"
+  );
   
   const handleLineClick = (groupId) => {
     // Vérification de sécurité avant le dispatch
@@ -45,9 +49,9 @@ const DeviceList = ({ devices = [] }) => {
     dispatch(devicesActions.setFilter({ groups: [] }));
   };
 
-  // Si pas de groupes chargés, on affiche un message d'attente
+  // On utilise groupsArray (déjà filtré) pour le message d'attente
   if (groupsArray.length === 0) {
-    return <Typography sx={{ p: 2 }}>Chargement des lignes...</Typography>;
+    return <Typography sx={{ p: 2 }}>Aucune ligne disponible...</Typography>;
   }
   
   return (
