@@ -121,11 +121,13 @@ const MainPage = () => {
 
   const onEventsClick = useCallback(() => setEventsOpen(true), [setEventsOpen]);
 
+  // Fermer automatiquement le sidebar sur mobile lors de la sélection d'un bus
   useEffect(() => {
-    if (!desktop && mapOnSelect && selectedDeviceId) {
-      setDevicesOpen(false);
+    if (!desktop && selectedDeviceId) {
+      setDevicesOpen(false); // Ferme le volet de la liste
+      setIsManualSelection(true); // Active l'affichage de la StatusCard
     }
-  }, [desktop, mapOnSelect, selectedDeviceId]);
+  }, [desktop, selectedDeviceId, setDevicesOpen]);
 
   // 1. On crée un objet stable qui ne change QUE si les données changent vraiment
   const memoizedFilter = useMemo(() => {
