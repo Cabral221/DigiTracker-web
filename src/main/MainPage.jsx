@@ -9,18 +9,19 @@ import { useDispatch, useSelector } from 'react-redux';
 import DeviceList from './DeviceList';
 import BottomMenu from '../common/components/BottomMenu';
 import StatusCard from '../common/components/StatusCard';
-import { devicesActions } from '../store';
+import { devicesActions } from '../store'; // Import groupé
+import { errorsActions } from '../store/errors'; 
 import usePersistedState from '../common/util/usePersistedState';
 import EventsDrawer from './EventsDrawer';
 import useFilter from './useFilter';
 import MainToolbar from './MainToolbar';
 import MainMap from './MainMap';
 import { useAttributePreference } from '../common/util/preferences';
-// Ajustez le chemin pour pointer vers votre fichier permission.js
 import { useIsSubscriber } from '../common/util/permissions';
 import Loader from '../common/components/Loader';
 import SubscriptionPrompt from '../common/components/SubscriptionPrompt';
 import SubscriptionBanner from '../common/components/SubscriptionBanner';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const useStyles = makeStyles()((theme) => ({
   root: {
@@ -71,125 +72,120 @@ const useStyles = makeStyles()((theme) => ({
 }));
 
 const MainPage = () => {
-  // 1. Lire l'état d'initialisation de la session
-  //    (L'état qui devient true seulement après la vérification API)
-  const initialized = useSelector(state => state.session.initialized); 
+// 1. Lire l'état d'initialisation de la session
+  //    (L'état qui devient true seulement après la vérification API)  
+  const initialized = useSelector(state => state.session.initialized);
 
   const { classes } = useStyles();
   const dispatch = useDispatch();
   const theme = useTheme();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const desktop = useMediaQuery(theme.breakpoints.up('md'));
-
   const mapOnSelect = useAttributePreference('mapOnSelect', false);
 
   const selectedDeviceId = useSelector((state) => state.devices.selectedId);
   const positions = useSelector((state) => state.session.positions);
   const [filteredPositions, setFilteredPositions] = useState([]);
   const selectedPosition = filteredPositions.find((position) => selectedDeviceId && position.deviceId === selectedDeviceId);
-  // AJOUTEZ CECI : On récupère notre nouveau filtre de groupe
+    // AJOUTEZ CECI : On récupère notre nouveau filtre de groupe
   const globalFilter = useSelector((state) => state.devices.filter);
 
   const user = useSelector((state) => state.session.user);
   const groups = useSelector((state) => {
-    const allGroups = state.groups.items || {}; // Ajout du || {} pour éviter le crash
+    const allGroups = state.groups.items || {};
     const filtered = {};
-    
     Object.keys(allGroups).forEach(id => {
       if (allGroups[id].name !== "Flotte SenBus") {
         filtered[id] = allGroups[id];
       }
     });
-    
     return filtered;
   });
 
   const [filteredDevices, setFilteredDevices] = useState([]);
-
   const [keyword, setKeyword] = useState('');
-  const [filter, setFilter] = usePersistedState('filter', {
-    statuses: [],
-    groups: [],
-  });
+  const [filter, setFilter] = usePersistedState('filter', { statuses: [], groups: [] });
   const [filterSort, setFilterSort] = usePersistedState('filterSort', '');
   const [filterMap, setFilterMap] = usePersistedState('filterMap', true);
-
   const [devicesOpen, setDevicesOpen] = useState(desktop);
   const [eventsOpen, setEventsOpen] = useState(false);
-
   const [isManualSelection, setIsManualSelection] = useState(false);
 
   const onEventsClick = useCallback(() => setEventsOpen(true), [setEventsOpen]);
 
-  // Fermer automatiquement le sidebar sur mobile lors de la sélection d'un bus
+  // =======================================================
+  // 🔄 LOGIQUE DE REDIRECTION (AVANT INITIALISATION)
+  // =======================================================
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get('paiement') === 'succes') {
+      const newUrl = `${window.location.pathname}?confirme=true`;
+      window.history.replaceState({}, document.title, newUrl);
+      window.location.reload(); // Force le rechargement pour rafraîchir les droits
+    }
+  }, [location]);
+
+  // =======================================================
+  // ✨ LOGIQUE DU TOAST (APRÈS INITIALISATION)
+  // =======================================================
+  useEffect(() => {
+    if (initialized) {
+      const params = new URLSearchParams(location.search);
+      if (params.get('confirme') === 'true') {
+        dispatch(errorsActions.push("Félicitations ! Votre abonnement SenBus est désormais actif. 🚀"));
+        navigate(location.pathname, { replace: true });
+      }
+    }
+  }, [initialized, location, navigate, dispatch]);
+
   useEffect(() => {
     if (!desktop && selectedDeviceId) {
-      setDevicesOpen(false); // Ferme le volet de la liste
-      setIsManualSelection(true); // Active l'affichage de la StatusCard
+      setDevicesOpen(false);
+      setIsManualSelection(true);
     }
-  }, [desktop, selectedDeviceId, setDevicesOpen]);
+  }, [desktop, selectedDeviceId]);
 
-  // 1. On crée un objet stable qui ne change QUE si les données changent vraiment
+    // 1. On crée un objet stable qui ne change QUE si les données changent vraiment
   const memoizedFilter = useMemo(() => {
-    // 1. Déterminer quels groupes sont sélectionnés
+        // 1. Déterminer quels groupes sont sélectionnés
     const selectedGroups = globalFilter.groups && globalFilter.groups.length > 0 
       ? globalFilter.groups 
       : (filter.groups || []);
-
-    // 2. Filtrer pour exclure l'ID 1 (Le groupe racine "Flotte SenBus")
-    // On convertit en Number pour être sûr de la comparaison
+          // 2. Filtrer pour exclure l'ID 1 (Le groupe racine "Flotte SenBus")
+          // On convertit en Number pour être sûr de la comparaison
     const excludedGroupId = 1;
     const filteredGroups = selectedGroups.filter(id => Number(id) !== excludedGroupId);
 
-    return {
-      statuses: filter.statuses || [],
-      groups: filteredGroups
-    };
+    return { statuses: filter.statuses || [], groups: filteredGroups };
   }, [filter.statuses, filter.groups, globalFilter.groups]);
 
-  // 2. On passe cet objet stable au hook
-  useFilter(
-    keyword,
-    memoizedFilter, // Utilisation de l'objet mémorisé
-    filterSort,
-    filterMap,
-    positions,
-    setFilteredDevices, 
-    setFilteredPositions
-  );
+  useFilter(keyword, memoizedFilter, filterSort, filterMap, positions, setFilteredDevices, setFilteredPositions);
 
   // =======================================================
   // ⛔ ÉTAPE CRITIQUE 1 : GESTION DU CHARGEMENT
   // =======================================================
   if (!initialized) {
-      // Afficher un spinner (Loader) tant que nous n'avons pas la réponse de session
-      return (<Loader />);
+    // Afficher un spinner (Loader) tant que nous n'avons pas la réponse de session
+    return (<Loader />);
   }
-  // L'exécution passe au-delà d'ici SEULEMENT quand initialized est TRUE.
 
   // =======================================================
   // ✅ ÉTAPE CRITIQUE 2 : VÉRIFICATION DE LA PERMISSION
   // =======================================================
-  // Le hook est exécuté avec les données utilisateur complètes (y compris isSubscriber).
   const hasAccess = useIsSubscriber();
 
-  // Si l'utilisateur n'a pas accès, affichez un message ou redirigez-le
   if (!hasAccess) {
-    // 2. Rendre le message d'abonnement au lieu de la carte
-    return (
-      <SubscriptionPrompt />
-    );
+    return (<SubscriptionPrompt />);
   }
 
-  // =======================================================
+    // =======================================================
   // 🔗 ÉTAPE CRITIQUE 3 : LIAISON AUTOMATIQUE (SaaS)
   // =======================================================
   // Logique déplacée côté Backend pour éviter les erreurs de permissions 400/403
 
-  console.log("Positions reçues :", Object.keys(positions).length);
-  console.log("Positions filtrées :", filteredPositions.length);
-
-  // On intercepte le changement de sélection pour forcer l'affichage
+    // On intercepte le changement de sélection pour forcer l'affichage
   useEffect(() => {
     if (selectedDeviceId) {
       setIsManualSelection(true);
@@ -244,13 +240,6 @@ const MainPage = () => {
         )}
       </div>
       <EventsDrawer open={eventsOpen} onClose={() => setEventsOpen(false)} />
-      {/* On affiche si :
-        1. Un appareil est sélectionné
-        ET (
-          C'est le seul appareil de la liste (ton exception pour 1 bus)
-          OU l'état isManualSelection est passé à vrai par le clic
-        )
-      */}
       {selectedDeviceId && (filteredDevices.length === 1 || isManualSelection) && (
         <div style={{ 
           position: 'fixed', 

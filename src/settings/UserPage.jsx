@@ -1,25 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import {
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Typography,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  FormControlLabel,
-  Checkbox,
-  FormGroup,
-  TextField,
-  Button,
-  InputAdornment,
-  IconButton,
-  OutlinedInput,
-  Dialog,
-  DialogContent,
-  DialogActions,
+  Accordion, AccordionSummary, AccordionDetails, Typography, FormControl,
+  InputLabel, Select, MenuItem, FormControlLabel, Checkbox, FormGroup,
+  TextField, Button, InputAdornment, IconButton, OutlinedInput,
+  Dialog, DialogContent, DialogActions,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
@@ -107,7 +92,6 @@ const UserPage = () => {
       const updatedAttributes = { ...item.attributes };
       updatedAttributes[attribute] = '';
       setItem({ ...item, attributes: updatedAttributes });
-
       const newParams = new URLSearchParams(searchParams);
       newParams.delete('attribute');
       setSearchParams(newParams, { replace: true });
@@ -135,11 +119,10 @@ const UserPage = () => {
     >
       {item && (
         <>
+          {/* 1. INFORMATIONS OBLIGATOIRES (Nom, Email, Password) */}
           <Accordion defaultExpanded={!attribute}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography variant="subtitle1">
-                {t('sharedRequired')}
-              </Typography>
+              <Typography variant="subtitle1">{t('sharedRequired')}</Typography>
             </AccordionSummary>
             <AccordionDetails className={classes.details}>
               <TextField
@@ -158,6 +141,7 @@ const UserPage = () => {
                   type="password"
                   onChange={(e) => setItem({ ...item, password: e.target.value })}
                   label={t('userPassword')}
+                  autoComplete="new-password"
                 />
               )}
               {totpEnable && (
@@ -169,12 +153,8 @@ const UserPage = () => {
                     value={item.totpKey || ''}
                     endAdornment={(
                       <InputAdornment position="end">
-                        <IconButton size="small" edge="end" onClick={handleGenerateTotp}>
-                          <CachedIcon fontSize="small" />
-                        </IconButton>
-                        <IconButton size="small" edge="end" onClick={() => setItem({ ...item, totpKey: null })}>
-                          <CloseIcon fontSize="small" />
-                        </IconButton>
+                        <IconButton size="small" edge="end" onClick={handleGenerateTotp}><CachedIcon fontSize="small" /></IconButton>
+                        <IconButton size="small" edge="end" onClick={() => setItem({ ...item, totpKey: null })}><CloseIcon fontSize="small" /></IconButton>
                       </InputAdornment>
                     )}
                   />
@@ -182,11 +162,11 @@ const UserPage = () => {
               )}
             </AccordionDetails>
           </Accordion>
+
+          {/* 2. PRÉFÉRENCES (Unités, Fuseau horaire) - Utile pour l'abonné */}
           <Accordion>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography variant="subtitle1">
-                {t('sharedPreferences')}
-              </Typography>
+              <Typography variant="subtitle1">{t('sharedPreferences')}</Typography>
             </AccordionSummary>
             <AccordionDetails className={classes.details}>
               <TextField
@@ -195,76 +175,15 @@ const UserPage = () => {
                 label={t('sharedPhone')}
               />
               <FormControl>
-                <InputLabel>{t('mapDefault')}</InputLabel>
-                <Select
-                  label={t('mapDefault')}
-                  value={item.map || 'locationIqStreets'}
-                  onChange={(e) => setItem({ ...item, map: e.target.value })}
-                >
-                  {mapStyles.filter((style) => style.available).map((style) => (
-                    <MenuItem key={style.id} value={style.id}>
-                      <Typography component="span">{style.title}</Typography>
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-              <FormControl>
-                <InputLabel>{t('settingsCoordinateFormat')}</InputLabel>
-                <Select
-                  label={t('settingsCoordinateFormat')}
-                  value={item.coordinateFormat || 'dd'}
-                  onChange={(e) => setItem({ ...item, coordinateFormat: e.target.value })}
-                >
-                  <MenuItem value="dd">{t('sharedDecimalDegrees')}</MenuItem>
-                  <MenuItem value="ddm">{t('sharedDegreesDecimalMinutes')}</MenuItem>
-                  <MenuItem value="dms">{t('sharedDegreesMinutesSeconds')}</MenuItem>
-                </Select>
-              </FormControl>
-              <FormControl>
                 <InputLabel>{t('settingsSpeedUnit')}</InputLabel>
                 <Select
                   label={t('settingsSpeedUnit')}
-                  value={(item.attributes && item.attributes.speedUnit) || 'kn'}
+                  value={(item.attributes && item.attributes.speedUnit) || 'kmh'}
                   onChange={(e) => setItem({ ...item, attributes: { ...item.attributes, speedUnit: e.target.value } })}
                 >
                   <MenuItem value="kn">{t('sharedKn')}</MenuItem>
                   <MenuItem value="kmh">{t('sharedKmh')}</MenuItem>
                   <MenuItem value="mph">{t('sharedMph')}</MenuItem>
-                </Select>
-              </FormControl>
-              <FormControl>
-                <InputLabel>{t('settingsDistanceUnit')}</InputLabel>
-                <Select
-                  label={t('settingsDistanceUnit')}
-                  value={(item.attributes && item.attributes.distanceUnit) || 'km'}
-                  onChange={(e) => setItem({ ...item, attributes: { ...item.attributes, distanceUnit: e.target.value } })}
-                >
-                  <MenuItem value="km">{t('sharedKm')}</MenuItem>
-                  <MenuItem value="mi">{t('sharedMi')}</MenuItem>
-                  <MenuItem value="nmi">{t('sharedNmi')}</MenuItem>
-                </Select>
-              </FormControl>
-              <FormControl>
-                <InputLabel>{t('settingsAltitudeUnit')}</InputLabel>
-                <Select
-                  label={t('settingsAltitudeUnit')}
-                  value={(item.attributes && item.attributes.altitudeUnit) || 'm'}
-                  onChange={(e) => setItem({ ...item, attributes: { ...item.attributes, altitudeUnit: e.target.value } })}
-                >
-                  <MenuItem value="m">{t('sharedMeters')}</MenuItem>
-                  <MenuItem value="ft">{t('sharedFeet')}</MenuItem>
-                </Select>
-              </FormControl>
-              <FormControl>
-                <InputLabel>{t('settingsVolumeUnit')}</InputLabel>
-                <Select
-                  label={t('settingsVolumeUnit')}
-                  value={(item.attributes && item.attributes.volumeUnit) || 'ltr'}
-                  onChange={(e) => setItem({ ...item, attributes: { ...item.attributes, volumeUnit: e.target.value } })}
-                >
-                  <MenuItem value="ltr">{t('sharedLiter')}</MenuItem>
-                  <MenuItem value="usGal">{t('sharedUsGallon')}</MenuItem>
-                  <MenuItem value="impGal">{t('sharedImpGallon')}</MenuItem>
                 </Select>
               </FormControl>
               <SelectField
@@ -275,185 +194,75 @@ const UserPage = () => {
                 titleGetter={(it) => it}
                 label={t('sharedTimezone')}
               />
-              <TextField
-                value={item.poiLayer || ''}
-                onChange={(e) => setItem({ ...item, poiLayer: e.target.value })}
-                label={t('mapPoiLayer')}
-              />
             </AccordionDetails>
           </Accordion>
-          <Accordion>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography variant="subtitle1">
-                {t('sharedLocation')}
-              </Typography>
-            </AccordionSummary>
-            <AccordionDetails className={classes.details}>
-              <TextField
-                type="number"
-                value={item.latitude || 0}
-                onChange={(e) => setItem({ ...item, latitude: Number(e.target.value) })}
-                label={t('positionLatitude')}
+
+          {/* 3. BLOC ADMINISTRATEUR (Localisation, Permissions, Attributs) */}
+          {admin && (
+            <>
+              <Accordion>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                  <Typography variant="subtitle1">{t('sharedLocation')}</Typography>
+                </AccordionSummary>
+                <AccordionDetails className={classes.details}>
+                  <TextField type="number" value={item.latitude || 0} onChange={(e) => setItem({ ...item, latitude: Number(e.target.value) })} label={t('positionLatitude')} />
+                  <TextField type="number" value={item.longitude || 0} onChange={(e) => setItem({ ...item, longitude: Number(e.target.value) })} label={t('positionLongitude')} />
+                  <Button variant="outlined" color="primary" onClick={() => {
+                    const { lng, lat } = map.getCenter();
+                    setItem({ ...item, latitude: Number(lat.toFixed(6)), longitude: Number(lng.toFixed(6)), zoom: Number(map.getZoom().toFixed(1)) });
+                  }}>
+                    {t('mapCurrentLocation')}
+                  </Button>
+                </AccordionDetails>
+              </Accordion>
+
+              <Accordion>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                  <Typography variant="subtitle1">{t('sharedPermissions')}</Typography>
+                </AccordionSummary>
+                <AccordionDetails className={classes.details}>
+                  <TextField type="number" value={item.deviceLimit || 0} onChange={(e) => setItem({ ...item, deviceLimit: Number(e.target.value) })} label={t('userDeviceLimit')} />
+                  <FormGroup>
+                    <FormControlLabel control={<Checkbox checked={item.administrator} onChange={(e) => setItem({ ...item, administrator: e.target.checked })} />} label={t('userAdmin')} />
+                    <FormControlLabel control={<Checkbox checked={item.disabled} onChange={(e) => setItem({ ...item, disabled: e.target.checked })} />} label={t('sharedDisabled')} />
+                  </FormGroup>
+                </AccordionDetails>
+              </Accordion>
+
+              <EditAttributesAccordion
+                attribute={attribute}
+                attributes={item.attributes}
+                setAttributes={(attributes) => setItem({ ...item, attributes })}
+                definitions={{ ...commonUserAttributes, ...userAttributes }}
+                focusAttribute={attribute}
+                editingId={item.id}
               />
-              <TextField
-                type="number"
-                value={item.longitude || 0}
-                onChange={(e) => setItem({ ...item, longitude: Number(e.target.value) })}
-                label={t('positionLongitude')}
-              />
-              <TextField
-                type="number"
-                value={item.zoom || 0}
-                onChange={(e) => setItem({ ...item, zoom: Number(e.target.value) })}
-                label={t('serverZoom')}
-              />
-              <Button
-                variant="outlined"
-                color="primary"
-                onClick={() => {
-                  const { lng, lat } = map.getCenter();
-                  setItem({
-                    ...item,
-                    latitude: Number(lat.toFixed(6)),
-                    longitude: Number(lng.toFixed(6)),
-                    zoom: Number(map.getZoom().toFixed(1)),
-                  });
-                }}
-              >
-                {t('mapCurrentLocation')}
-              </Button>
-            </AccordionDetails>
-          </Accordion>
-          <Accordion>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography variant="subtitle1">
-                {t('sharedPermissions')}
-              </Typography>
-            </AccordionSummary>
-            <AccordionDetails className={classes.details}>
-              <TextField
-                label={t('userExpirationTime')}
-                type="date"
-                value={item.expirationTime ? item.expirationTime.split('T')[0] : '2099-01-01'}
-                onChange={(e) => {
-                  if (e.target.value) {
-                    setItem({ ...item, expirationTime: new Date(e.target.value).toISOString() });
-                  }
-                }}
-                disabled={!manager}
-              />
-              <TextField
-                type="number"
-                value={item.deviceLimit || 0}
-                onChange={(e) => setItem({ ...item, deviceLimit: Number(e.target.value) })}
-                label={t('userDeviceLimit')}
-                disabled={!admin}
-              />
-              <TextField
-                type="number"
-                value={item.userLimit || 0}
-                onChange={(e) => setItem({ ...item, userLimit: Number(e.target.value) })}
-                label={t('userUserLimit')}
-                disabled={!admin}
-              />
-              <Button
-                variant="outlined"
-                color="primary"
-                onClick={() => setRevokeDialogOpen(true)}
-              >
-                {t('userRevokeToken')}
-              </Button>
-              <FormGroup>
-                <FormControlLabel
-                  control={<Checkbox checked={item.disabled} onChange={(e) => setItem({ ...item, disabled: e.target.checked })} />}
-                  label={t('sharedDisabled')}
-                  disabled={!manager}
-                />
-                <FormControlLabel
-                  control={<Checkbox checked={item.administrator} onChange={(e) => setItem({ ...item, administrator: e.target.checked })} />}
-                  label={t('userAdmin')}
-                  disabled={!admin}
-                />
-                <FormControlLabel
-                  control={<Checkbox checked={item.readonly} onChange={(e) => setItem({ ...item, readonly: e.target.checked })} />}
-                  label={t('serverReadonly')}
-                  disabled={!manager}
-                />
-                <FormControlLabel
-                  control={<Checkbox checked={item.deviceReadonly} onChange={(e) => setItem({ ...item, deviceReadonly: e.target.checked })} />}
-                  label={t('userDeviceReadonly')}
-                  disabled={!manager}
-                />
-                <FormControlLabel
-                  control={<Checkbox checked={item.limitCommands} onChange={(e) => setItem({ ...item, limitCommands: e.target.checked })} />}
-                  label={t('userLimitCommands')}
-                  disabled={!manager}
-                />
-                <FormControlLabel
-                  control={<Checkbox checked={item.disableReports} onChange={(e) => setItem({ ...item, disableReports: e.target.checked })} />}
-                  label={t('userDisableReports')}
-                  disabled={!manager}
-                />
-                <FormControlLabel
-                  control={<Checkbox checked={item.fixedEmail} onChange={(e) => setItem({ ...item, fixedEmail: e.target.checked })} />}
-                  label={t('userFixedEmail')}
-                  disabled={!manager}
-                />
-              </FormGroup>
-            </AccordionDetails>
-          </Accordion>
-          {/* Edition des attributs */}
-          <EditAttributesAccordion
-            attribute={attribute}
-            attributes={item.attributes}
-            setAttributes={(attributes) => setItem({ ...item, attributes })}
-            definitions={{ ...commonUserAttributes, ...userAttributes }}
-            focusAttribute={attribute}
-            // NOUVELLE PROP AJOUTÉE ICI :
-            editingId={item.id}
-          />
-          {registrationEnabled && item.id === currentUser.id && !manager && (
+            </>
+          )}
+
+          {/* 4. SUPPRESSION DE COMPTE (Visible pour les abonnés si activé) */}
+          {registrationEnabled && item.id === currentUser.id && !admin && (
             <Accordion>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography variant="subtitle1" color="error">
-                  {t('userDeleteAccount')}
-                </Typography>
+                <Typography variant="subtitle1" color="error">{t('userDeleteAccount')}</Typography>
               </AccordionSummary>
               <AccordionDetails className={classes.details}>
-                <TextField
-                  value={deleteEmail}
-                  onChange={(e) => setDeleteEmail(e.target.value)}
-                  label={t('userEmail')}
-                  error={deleteFailed}
-                />
-                <Button
-                  variant="outlined"
-                  color="error"
-                  onClick={handleDelete}
-                  startIcon={<DeleteForeverIcon />}
-                >
-                  {t('userDeleteAccount')}
-                </Button>
+                <TextField value={deleteEmail} onChange={(e) => setDeleteEmail(e.target.value)} label={t('userEmail')} error={deleteFailed} />
+                <Button variant="outlined" color="error" onClick={handleDelete} startIcon={<DeleteForeverIcon />}>{t('userDeleteAccount')}</Button>
               </AccordionDetails>
             </Accordion>
           )}
         </>
       )}
+
+      {/* DIALOGUES DE RÉVOCATION */}
       <Dialog open={revokeDialogOpen} onClose={closeRevokeDialog} fullWidth maxWidth="xs">
         <DialogContent className={classes.details}>
-          <TextField
-            value={revokeToken}
-            onChange={(e) => setRevokeToken(e.target.value)}
-            label={t('userToken')}
-            autoFocus
-            fullWidth
-          />
+          <TextField value={revokeToken} onChange={(e) => setRevokeToken(e.target.value)} label={t('userToken')} autoFocus fullWidth />
         </DialogContent>
         <DialogActions>
           <Button onClick={closeRevokeDialog}>{t('sharedCancel')}</Button>
-          <Button onClick={handleRevokeToken} disabled={!revokeToken} variant="contained">
-            {t('userRevokeToken')}
-          </Button>
+          <Button onClick={handleRevokeToken} disabled={!revokeToken} variant="contained">{t('userRevokeToken')}</Button>
         </DialogActions>
       </Dialog>
     </EditItemView>

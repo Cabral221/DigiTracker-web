@@ -41,25 +41,28 @@ const SettingsMenu = () => {
   return (
     <>
       <List>
+        {/* TOUT LE MONDE : Accès au compte pour modifier Nom et Mot de passe */}
         <MenuItem
-          title={t('sharedPreferences')}
-          link="/settings/preferences"
-          icon={<TuneIcon />}
-          selected={location.pathname === '/settings/preferences'}
+          title={t('settingsUser')}
+          link={`/settings/user/${userId}`}
+          icon={<PersonIcon />}
+          selected={location.pathname === `/settings/user/${userId}`}
         />
-        {!readonly && (
+
+        {/* ADMIN UNIQUEMENT : Accès total, même si readonly est actif sur le serveur */}
+        {admin && (
           <>
+            <MenuItem
+              title={t('sharedPreferences')}
+              link="/settings/preferences"
+              icon={<TuneIcon />}
+              selected={location.pathname === '/settings/preferences'}
+            />
             <MenuItem
               title={t('sharedNotifications')}
               link="/settings/notifications"
               icon={<NotificationsIcon />}
               selected={location.pathname.startsWith('/settings/notification')}
-            />
-            <MenuItem
-              title={t('settingsUser')}
-              link={`/settings/user/${userId}`}
-              icon={<PersonIcon />}
-              selected={location.pathname === `/settings/user/${userId}`}
             />
             <MenuItem
               title={t('deviceTitle')}
@@ -123,6 +126,8 @@ const SettingsMenu = () => {
             )}
           </>
         )}
+
+        {/* LIENS EXTERNES : Toujours visibles si configurés */}
         {billingLink && (
           <MenuItem
             title={t('userBilling')}
@@ -138,6 +143,8 @@ const SettingsMenu = () => {
           />
         )}
       </List>
+
+      {/* SECTION ADMINISTRATION SERVEUR & UTILISATEURS */}
       {manager && (
         <>
           <Divider />
