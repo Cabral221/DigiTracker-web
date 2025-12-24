@@ -19,9 +19,10 @@ import MainMap from './MainMap';
 import { useAttributePreference } from '../common/util/preferences';
 import { useIsSubscriber } from '../common/util/permissions';
 import Loader from '../common/components/Loader';
-import SubscriptionPrompt from '../common/components/SubscriptionPrompt';
+// import SubscriptionPrompt from '../common/components/SubscriptionPrompt';
 import SubscriptionBanner from '../common/components/SubscriptionBanner';
 import { useLocation, useNavigate } from 'react-router-dom';
+import SubscriptionActionBanner from '../common/components/SubscriptionActionBanner';
 
 const useStyles = makeStyles()((theme) => ({
   root: {
@@ -174,11 +175,11 @@ const MainPage = () => {
   // =======================================================
   // ✅ ÉTAPE CRITIQUE 2 : VÉRIFICATION DE LA PERMISSION
   // =======================================================
-  const hasAccess = useIsSubscriber();
+  // const hasAccess = useIsSubscriber();
 
-  if (!hasAccess) {
-    return (<SubscriptionPrompt />);
-  }
+  // if (!hasAccess) {
+  //     return (<SubscriptionPrompt />);
+  // }
 
     // =======================================================
   // 🔗 ÉTAPE CRITIQUE 3 : LIAISON AUTOMATIQUE (SaaS)
@@ -195,6 +196,10 @@ const MainPage = () => {
   return (
     <div className={classes.root}>
       <SubscriptionBanner />
+      {/* Bannière d'abonnement */}
+      {user && user.attributes.isSubscriber !== 'true' && (
+        <SubscriptionActionBanner />
+      )}
       {desktop && (
         <MainMap
           filteredPositions={filteredPositions}

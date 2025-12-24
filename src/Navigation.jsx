@@ -61,6 +61,8 @@ import { generateLoginToken } from './common/components/NativeInterface';
 import { useLocalization } from './common/components/LocalizationProvider';
 import fetchOrThrow from './common/util/fetchOrThrow';
 import AuditPage from './reports/AuditPage';
+//-- Offre page for route ---
+import OffresPage from './other/OffresPage';
 
 const Navigation = () => {
   const dispatch = useDispatch();
@@ -112,6 +114,8 @@ const Navigation = () => {
   }
   return (
     <Routes>
+      <Route path="/offres" element={<OffresPage />} />
+
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/reset-password" element={<ResetPasswordPage />} />
