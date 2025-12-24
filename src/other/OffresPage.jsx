@@ -68,7 +68,7 @@ const OffresPage = () => {
         <Grid container spacing={isMobile ? 4 : 8} alignItems="center">
           
           {/* GAUCHE : BRANDING */}
-          <Grid item xs={12} md={7}>
+          <Grid item xs={12} md={7} size={isMobile ? 12 : 6}>
             <Box sx={{ textAlign: isMobile ? 'center' : 'left' }}>
               <LogoImage color="#00853F" />
               <Typography variant={isMobile ? "h4" : "h2"} fontWeight="bold" sx={{ mt: 2, mb: 1, color: '#00853F' }}>
@@ -98,7 +98,7 @@ const OffresPage = () => {
           </Grid>
 
           {/* DROITE : PAIEMENT */}
-          <Grid item xs={12} md={5}>
+          <Grid item xs={12} md={5} size={isMobile ? 12 : 6}>
             <Card elevation={8} sx={{ borderRadius: 4 }}>
               <Box sx={{ backgroundColor: '#00853F', py: 1.5, textAlign: 'center' }}>
                 <Typography variant="button" color="white" fontWeight="bold">FORFAIT ANNUEL</Typography>
@@ -172,8 +172,20 @@ const OffresPage = () => {
                 >
                   ACTIVER MON COMPTE
                 </Button>
+
+                <Typography variant="caption" color="textSecondary" sx={{ mt: 2, display: 'block', textAlign: 'center' }}>
+                  En cliquant sur "ACTIVER MON COMPTE", vous acceptez nos&nbsp;
+                  <Button variant="text" size="small" onClick={() => window.open('/terms', '_blank')}>
+                    Conditions d'Utilisation
+                  </Button>
+                  &nbsp;et notre&nbsp;
+                  <Button variant="text" size="small" onClick={() => window.open('/privacy', '_blank')}>
+                    Politique de Confidentialité
+                  </Button>.
+                </Typography>
               </CardContent>
             </Card>
+            
           </Grid>
         </Grid>
       </Container>
