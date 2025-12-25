@@ -31,17 +31,21 @@ const SettingsMenu = () => {
 
   const readonly = useRestriction('readonly');
   const admin = useAdministrator();
-  const manager = useManager();
+  const manager = useManager(); // Utilise le hook manager existant
+  const user = useSelector((state) => state.session.user); // Récupérer l'utilisateur pour vérifier l'abonnement
   const userId = useSelector((state) => state.session.user.id);
   const supportLink = useSelector((state) => state.session.server.attributes.support);
   const billingLink = useSelector((state) => state.session.user.attributes.billingLink);
 
   const features = useFeatures();
 
+  // On définit qui a le droit de gérer sa propre flotte (Admin ou Abonné/Manager)
+  const canManageFlotte = admin || manager || user.attributes.isSubscriber === 'true';
+
   return (
     <>
       <List>
-        {/* TOUT LE MONDE : Accès au compte pour modifier Nom et Mot de passe */}
+        {/* TOUT LE MONDE : Accès au profil */}
         <MenuItem
           title={t('settingsUser')}
           link={`/settings/user/${userId}`}
@@ -49,8 +53,8 @@ const SettingsMenu = () => {
           selected={location.pathname === `/settings/user/${userId}`}
         />
 
-        {/* ADMIN UNIQUEMENT : Accès total, même si readonly est actif sur le serveur */}
-        {admin && (
+        {/* ACCÈS GESTION : Visible par l'Admin ET le Manager (Abonné) */}
+        {canManageFlotte && (
           <>
             <MenuItem
               title={t('sharedPreferences')}
@@ -100,22 +104,6 @@ const SettingsMenu = () => {
                 selected={location.pathname.startsWith('/settings/calendar')}
               />
             )}
-            {!features.disableComputedAttributes && (
-              <MenuItem
-                title={t('sharedComputedAttributes')}
-                link="/settings/attributes"
-                icon={<CalculateIcon />}
-                selected={location.pathname.startsWith('/settings/attribute')}
-              />
-            )}
-            {!features.disableMaintenance && (
-              <MenuItem
-                title={t('sharedMaintenance')}
-                link="/settings/maintenances"
-                icon={<BuildIcon />}
-                selected={location.pathname.startsWith('/settings/maintenance')}
-              />
-            )}
             {!features.disableSavedCommands && (
               <MenuItem
                 title={t('sharedSavedCommands')}
@@ -124,10 +112,19 @@ const SettingsMenu = () => {
                 selected={location.pathname.startsWith('/settings/command')}
               />
             )}
+            {/* Options avancées souvent réservées au Manager/Admin */}
+            {!features.disableMaintenance && (
+              <MenuItem
+                title={t('sharedMaintenance')}
+                link="/settings/maintenances"
+                icon={<BuildIcon />}
+                selected={location.pathname.startsWith('/settings/maintenance')}
+              />
+            )}
           </>
         )}
 
-        {/* LIENS EXTERNES : Toujours visibles si configurés */}
+        {/* LIENS EXTERNES */}
         {billingLink && (
           <MenuItem
             title={t('userBilling')}
@@ -135,26 +132,23 @@ const SettingsMenu = () => {
             icon={<PaymentIcon />}
           />
         )}
-        {supportLink && (
-          <MenuItem
-            title={t('settingsSupport')}
-            link={supportLink}
-            icon={<HelpIcon />}
-          />
-        )}
       </List>
 
-      {/* SECTION ADMINISTRATION SERVEUR & UTILISATEURS */}
-      {manager && (
+      {/* SECTION ADMINISTRATION SYSTÈME (Uniquement Admin ou vrai Manager d'utilisateurs) */}
+      {(admin || manager) && (
         <>
           <Divider />
           <List>
-            <MenuItem
-              title={t('serverAnnouncement')}
-              link="/settings/announcement"
-              icon={<CampaignIcon />}
-              selected={location.pathname === '/settings/announcement'}
-            />
+            {/* L'annonce est souvent pour l'Admin uniquement */}
+            {admin && (
+              <MenuItem
+                title={t('serverAnnouncement')}
+                link="/settings/announcement"
+                icon={<CampaignIcon />}
+                selected={location.pathname === '/settings/announcement'}
+              />
+            )}
+            {/* Seul l'Admin gère les réglages du serveur global */}
             {admin && (
               <MenuItem
                 title={t('settingsServer')}
@@ -163,6 +157,7 @@ const SettingsMenu = () => {
                 selected={location.pathname === '/settings/server'}
               />
             )}
+            {/* Seul l'Admin voit la liste globale des utilisateurs (ou un Manager de sous-comptes) */}
             <MenuItem
               title={t('settingsUsers')}
               link="/settings/users"
