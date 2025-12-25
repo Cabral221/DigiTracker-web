@@ -216,7 +216,7 @@ const OffresPage = () => {
                 </Button>
                 <Typography variant="body2" sx={{ display: isMobile ? 'none' : 'block', alignSelf: 'center' }}>|</Typography>
                 <Typography variant="body2" sx={{ color: '#000000', alignSelf: 'center', fontWeight: 'bold' }}>
-                  Email: cabraldiop18@gmail.sn
+                  Email: cabraldiop18@gmail.com
                 </Typography>
               </Box>
             </Grid>
