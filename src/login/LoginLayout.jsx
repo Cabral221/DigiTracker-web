@@ -69,11 +69,11 @@ const LoginLayout = ({ children }) => {
         <LogoImage color={'#000000'} sx={{ width: '80px', margin: '0 auto' }} />
         
         <Typography variant="h4" className={classes.brandTitle}>
-        DigiTracker
+        SenBus
         </Typography>
         
         <Typography className={classes.brandSubtitle}>
-        Gestion et suivi en temps réel de vos bus urbains
+        Suivi en temps réel de vos bus de transports urbains
         </Typography>
         
         <Divider sx={{ mb: 2 }} />

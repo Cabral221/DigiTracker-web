@@ -58,7 +58,7 @@ const DeviceList = ({ devices = [], groups: externalGroups }) => {
     <div className={classes.list}>
     <div className={classes.header}>
       <Box display="flex" justifyContent="space-between" alignItems="center">
-        <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#1976d2' }}>
+        <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#d2b019ff' }}>
           🇸🇳 Nos Lignes
         </Typography>
         <Button size="small" onClick={handleClearFilter} sx={{ textTransform: 'none' }}>
@@ -79,7 +79,7 @@ const DeviceList = ({ devices = [], groups: externalGroups }) => {
         <ListItem key={group.id} disablePadding divider>
           <ListItemButton onClick={() => handleLineClick(group.id)} sx={{ py: 2 }}>
           <ListItemIcon>
-            <Badge badgeContent={activeCount} color="success" className={classes.lineBadge}>
+            <Badge badgeContent={activeCount} color="secondary" className={classes.lineBadge}>
               <DirectionsBusIcon fontSize="large" color="primary" />
             </Badge>
           </ListItemIcon>
