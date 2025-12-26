@@ -1,5 +1,6 @@
-import React from 'react';
-import { Container, Typography, Button, Box, Paper, Divider } from '@mui/material';
+import {
+ Container, Typography, Button, Box, Paper, Divider 
+} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 

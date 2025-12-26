@@ -16,8 +16,6 @@ import EventsDrawer from './EventsDrawer';
 import useFilter from './useFilter';
 import MainToolbar from './MainToolbar';
 import MainMap from './MainMap';
-import { useAttributePreference } from '../common/util/preferences';
-import { useIsSubscriber } from '../common/util/permissions';
 import Loader from '../common/components/Loader';
 // import SubscriptionPrompt from '../common/components/SubscriptionPrompt';
 import SubscriptionBanner from '../common/components/SubscriptionBanner';

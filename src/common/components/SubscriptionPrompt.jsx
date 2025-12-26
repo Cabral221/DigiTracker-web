@@ -1,7 +1,8 @@
-import React from 'react';
 import { useDispatch, useSelector } from 'react-redux'; // Ajout de useSelector
 import { useNavigate } from 'react-router-dom';
-import { Button, Typography, Box, Paper, Stack, Divider } from '@mui/material';
+import {
+ Button, Typography, Box, Paper, Stack, Divider 
+} from '@mui/material';
 import PaymentIcon from '@mui/icons-material/Payment';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import SecurityIcon from '@mui/icons-material/Security';

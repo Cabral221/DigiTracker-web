@@ -1,6 +1,5 @@
-import { useMediaQuery, Paper } from '@mui/material';
+import { Paper } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
-import { useTheme } from '@mui/material/styles';
 import LogoImage from './LogoImage';
 import { Typography, Divider } from '@mui/material';
 
@@ -57,7 +56,6 @@ const useStyles = makeStyles()((theme) => ({
 
 const LoginLayout = ({ children }) => {
   const { classes } = useStyles();
-  const theme = useTheme();
 
   return (
     <main className={classes.root}>

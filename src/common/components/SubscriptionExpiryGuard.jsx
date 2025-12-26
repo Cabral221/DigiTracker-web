@@ -1,5 +1,6 @@
-import React from 'react';
-import { Box, Typography, Button, Paper, Stack } from '@mui/material';
+import {
+ Box, Typography, Button, Paper, Stack 
+} from '@mui/material';
 import LockIcon from '@mui/icons-material/Lock';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useDispatch } from 'react-redux';
