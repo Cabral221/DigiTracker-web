@@ -73,10 +73,9 @@ const useStyles = makeStyles()((theme) => ({
 }));
 
 const MainPage = () => {
-// 1. Lire l'état d'initialisation de la session
-  //    (L'état qui devient true seulement après la vérification API)  
+  // 1. Déclarations des Hooks de base (TOUJOURS EN PREMIER)
   const initialized = useSelector(state => state.session.initialized);
-
+  const user = useSelector((state) => state.session.user);
   const { classes } = useStyles();
   const dispatch = useDispatch();
   const theme = useTheme();
@@ -84,16 +83,23 @@ const MainPage = () => {
   const navigate = useNavigate();
 
   const desktop = useMediaQuery(theme.breakpoints.up('md'));
-  const mapOnSelect = useAttributePreference('mapOnSelect', false);
 
   const selectedDeviceId = useSelector((state) => state.devices.selectedId);
   const positions = useSelector((state) => state.session.positions);
+  
+  // Déclaration de tous les states
   const [filteredPositions, setFilteredPositions] = useState([]);
-  const selectedPosition = filteredPositions.find((position) => selectedDeviceId && position.deviceId === selectedDeviceId);
-    // AJOUTEZ CECI : On récupère notre nouveau filtre de groupe
-  const globalFilter = useSelector((state) => state.devices.filter);
+  const [filteredDevices, setFilteredDevices] = useState([]);
+  const [keyword, setKeyword] = useState('');
+  const [filter, setFilter] = usePersistedState('filter', { statuses: [], groups: [] });
+  const [filterSort, setFilterSort] = usePersistedState('filterSort', '');
+  const [filterMap, setFilterMap] = usePersistedState('filterMap', true);
+  const [devicesOpen, setDevicesOpen] = useState(desktop);
+  const [eventsOpen, setEventsOpen] = useState(false);
+  const [isManualSelection, setIsManualSelection] = useState(false);
 
-  const user = useSelector((state) => state.session.user);
+  // Sélections et mémos
+  const globalFilter = useSelector((state) => state.devices.filter);
   const groups = useSelector((state) => {
     const allGroups = state.groups.items || {};
     const filtered = {};
@@ -105,14 +111,10 @@ const MainPage = () => {
     return filtered;
   });
 
-  const [filteredDevices, setFilteredDevices] = useState([]);
-  const [keyword, setKeyword] = useState('');
-  const [filter, setFilter] = usePersistedState('filter', { statuses: [], groups: [] });
-  const [filterSort, setFilterSort] = usePersistedState('filterSort', '');
-  const [filterMap, setFilterMap] = usePersistedState('filterMap', true);
-  const [devicesOpen, setDevicesOpen] = useState(desktop);
-  const [eventsOpen, setEventsOpen] = useState(false);
-  const [isManualSelection, setIsManualSelection] = useState(false);
+  const selectedPosition = useMemo(() => 
+    filteredPositions.find((position) => selectedDeviceId && position.deviceId === selectedDeviceId),
+    [filteredPositions, selectedDeviceId]
+  );
 
   const onEventsClick = useCallback(() => setEventsOpen(true), [setEventsOpen]);
 
@@ -124,7 +126,7 @@ const MainPage = () => {
     if (params.get('paiement') === 'succes') {
       const newUrl = `${window.location.pathname}?confirme=true`;
       window.history.replaceState({}, document.title, newUrl);
-      window.location.reload(); // Force le rechargement pour rafraîchir les droits
+      window.location.reload(); 
     }
   }, [location]);
 
@@ -148,51 +150,37 @@ const MainPage = () => {
     }
   }, [desktop, selectedDeviceId]);
 
-    // 1. On crée un objet stable qui ne change QUE si les données changent vraiment
+  // Filtrage des groupes
   const memoizedFilter = useMemo(() => {
-        // 1. Déterminer quels groupes sont sélectionnés
     const selectedGroups = globalFilter.groups && globalFilter.groups.length > 0 
       ? globalFilter.groups 
       : (filter.groups || []);
-          // 2. Filtrer pour exclure l'ID 1 (Le groupe racine "Flotte SenBus")
-          // On convertit en Number pour être sûr de la comparaison
     const excludedGroupId = 1;
     const filteredGroups = selectedGroups.filter(id => Number(id) !== excludedGroupId);
 
     return { statuses: filter.statuses || [], groups: filteredGroups };
   }, [filter.statuses, filter.groups, globalFilter.groups]);
 
+  // Utilisation du filtre (Hook)
   useFilter(keyword, memoizedFilter, filterSort, filterMap, positions, setFilteredDevices, setFilteredPositions);
 
-  // =======================================================
-  // ⛔ ÉTAPE CRITIQUE 1 : GESTION DU CHARGEMENT
-  // =======================================================
-  if (!initialized) {
-    // Afficher un spinner (Loader) tant que nous n'avons pas la réponse de session
-    return (<Loader />);
-  }
-
-  // =======================================================
-  // ✅ ÉTAPE CRITIQUE 2 : VÉRIFICATION DE LA PERMISSION
-  // =======================================================
-  // const hasAccess = useIsSubscriber();
-
-  // if (!hasAccess) {
-  //     return (<SubscriptionPrompt />);
-  // }
-
-    // =======================================================
-  // 🔗 ÉTAPE CRITIQUE 3 : LIAISON AUTOMATIQUE (SaaS)
-  // =======================================================
-  // Logique déplacée côté Backend pour éviter les erreurs de permissions 400/403
-
-    // On intercepte le changement de sélection pour forcer l'affichage
+  // Liaison manuelle
   useEffect(() => {
     if (selectedDeviceId) {
       setIsManualSelection(true);
     }
   }, [selectedDeviceId]);
-  
+
+  // =======================================================
+  // 🛡️ LE GARDE-FOU (PLACÉ APRÈS TOUS LES HOOKS)
+  // =======================================================
+  if (!initialized || !user) {
+    return <Loader />;
+  }
+
+  // =======================================================
+  // ✅ RENDU FINAL
+  // =======================================================
   return (
     <div className={classes.root}>
       <SubscriptionBanner />

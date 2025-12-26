@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Navigate } from 'react-router-dom';
 import {
   useMediaQuery, Select, MenuItem, FormControl, Button, TextField, Link, Snackbar, IconButton, Tooltip, Box, InputAdornment,
 } from '@mui/material';
@@ -59,6 +60,9 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const t = useTranslation();
+  
+  const user = useSelector((state) => state.session.user);
+  const initialized = useSelector((state) => state.session.initialized);
 
   const { languages, language, setLocalLanguage } = useLocalization();
   const languageList = Object.entries(languages).map((values) => ({ code: values[0], country: values[1].country, name: values[1].name }));
@@ -85,6 +89,31 @@ const LoginPage = () => {
 
   const [announcementShown, setAnnouncementShown] = useState(false);
   const announcement = useSelector((state) => state.session.server.announcement);
+
+  // ✅ Utiliser useEffect pour la redirection après le rendu
+  useEffect(() => {
+    if (!initialized) {
+      fetch('/api/session')
+        .then((response) => {
+          if (response.ok) {
+            return response.json();
+          }
+          return null;
+        })
+        .then((user) => {
+          // Cette action dans Traccar met à jour 'user' ET 'initialized' simultanément
+          dispatch(sessionActions.updateUser(user));
+        })
+        .catch(() => {
+          dispatch(sessionActions.updateUser(null));
+        });
+    }
+  }, [initialized, dispatch]);
+
+  // ✅ Gardez la redirection déclarative ici aussi pour plus de sécurité
+  if (initialized && user) {
+    return <Navigate to="/" replace />;
+  }
 
   const handlePasswordLogin = async (event) => {
     event.preventDefault();

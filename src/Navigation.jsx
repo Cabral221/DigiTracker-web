@@ -63,10 +63,13 @@ import fetchOrThrow from './common/util/fetchOrThrow';
 import AuditPage from './reports/AuditPage';
 //-- Offre page for route ---
 import OffresPage from './other/OffresPage';
+import { useSelector } from 'react-redux';
+import { Navigate } from 'react-router-dom';
 
 const Navigation = () => {
   const dispatch = useDispatch();
   const { setLocalLanguage } = useLocalization();
+  const user = useSelector((state) => state.session.user);
 
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -112,12 +115,13 @@ const Navigation = () => {
   if (hasQueryParams) {
     return (<Loader />);
   }
+
   return (
     <Routes>
       <Route path="/offres" element={<OffresPage />} />
 
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<RegisterPage />} />
+      <Route path="/login" element={!user ? <LoginPage /> : <Navigate to="/" />} />
+      <Route path="/register" element={!user ? <RegisterPage /> : <Navigate to="/" replace />} />
       <Route path="/reset-password" element={<ResetPasswordPage />} />
       <Route path="/change-server" element={<ChangeServerPage />} />
       <Route path="/" element={<App />}>
