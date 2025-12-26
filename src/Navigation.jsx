@@ -2,7 +2,8 @@ import {
   Route, Routes,
   useSearchParams,
 } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux'; // Import combiné
+import { Navigate, useLocation } from 'react-router-dom'; // Ajout de useLocation
 import MainPage from './main/MainPage';
 import CombinedReportPage from './reports/CombinedReportPage';
 import PositionsReportPage from './reports/PositionsReportPage';
@@ -63,13 +64,12 @@ import fetchOrThrow from './common/util/fetchOrThrow';
 import AuditPage from './reports/AuditPage';
 //-- Offre page for route ---
 import OffresPage from './other/OffresPage';
-import { useSelector } from 'react-redux';
-import { Navigate } from 'react-router-dom';
 import TermsPage from './other/TermsPage';
 import PrivacyPage from './other/PrivacyPage';
 
 const Navigation = () => {
   const dispatch = useDispatch();
+  const location = useLocation(); // Hook pour obtenir l'URL actuelle
   const { setLocalLanguage } = useLocalization();
   const user = useSelector((state) => state.session.user);
 
@@ -118,19 +118,28 @@ const Navigation = () => {
     return (<Loader />);
   }
 
+  // --- LOGIQUE DE REDIRECTION INTELLIGENTE ---
+  const shouldRedirectToMain = user && (location.pathname === '/login' || location.pathname === '/register');
+
   return (
     <Routes>
-      {/* Pages Légales accessibles à tous */}
+      {/* Pages 100% publiques (accessibles même sans session) */}
       <Route path="/terms" element={<TermsPage />} />
       <Route path="/privacy" element={<PrivacyPage />} />
-      <Route path="/offres" element={<OffresPage />} />
-
-      <Route path="/login" element={!user ? <LoginPage /> : <Navigate to="/" />} />
-      <Route path="/register" element={!user ? <RegisterPage /> : <Navigate to="/" replace />} />
+      
+      <Route path="/login" element={shouldRedirectToMain ? <Navigate to="/" replace /> : <LoginPage />} />
+      <Route path="/register" element={shouldRedirectToMain ? <Navigate to="/" replace /> : <RegisterPage />} />
       <Route path="/reset-password" element={<ResetPasswordPage />} />
       <Route path="/change-server" element={<ChangeServerPage />} />
+      
+      {/* IMPORTANT : Toutes les routes ci-dessous nécessitent que le composant App 
+          soit chargé pour gérer la session utilisateur (user connecté mais expiré).
+      */}
       <Route path="/" element={<App />}>
         <Route index element={<MainPage />} />
+        
+        {/* On déplace 'offres' ici pour qu'il soit un enfant de App */}
+        <Route path="offres" element={<OffresPage />} />
 
         <Route path="position/:id" element={<PositionPage />} />
         <Route path="network/:positionId" element={<NetworkPage />} />
