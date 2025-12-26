@@ -1,4 +1,6 @@
-import { grey, green, red, blue } from '@mui/material/colors'; // Ajout de couleurs pour le thème
+import {
+ grey, 
+} from '@mui/material/colors'; // Ajout de couleurs pour le thème
 import { createTheme } from '@mui/material';
 import { loadImage, prepareIcon } from './mapUtil';
 

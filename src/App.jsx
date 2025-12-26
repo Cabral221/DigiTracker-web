@@ -37,6 +37,7 @@ const App = () => {
   const newServer = useSelector((state) => state.session.server.newServer);
   const termsUrl = useSelector((state) => state.session.server.attributes.termsUrl);
   const user = useSelector((state) => state.session.user);
+  const initialized = useSelector((state) => state.session.initialized); // On récupère l'état d'initialisation
 
   const acceptTerms = useCatch(async () => {
     const response = await fetchOrThrow(`/api/users/${user.id}`, {
@@ -48,28 +49,49 @@ const App = () => {
   });
 
   useEffectAsync(async () => {
-    if (!user) {
-      const response = await fetch('/api/session');
-      if (response.ok) {
-        dispatch(sessionActions.updateUser(await response.json()));
-        // 1. Succès : Session vérifiée et utilisateur mis à jour
-        dispatch(sessionActions.setInitialized()); // <-- AJOUT CRITIQUE 1
-      } else {
-        window.sessionStorage.setItem('postLogin', pathname + search);
-        navigate(newServer ? '/register' : '/login', { replace: true });
-        // 2. Échec/Redirection : La vérification est terminée, même si elle a échoué
-        dispatch(sessionActions.setInitialized()); // <-- AJOUT CRITIQUE 2
-      }
-    }else{
-      // 3. Utilisateur déjà chargé : La vérification est implicitement terminée
-        dispatch(sessionActions.setInitialized()); // <-- AJOUT CRITIQUE 3
-    }
-    return null;
-  }, []);
+    // 1. Pages réellement publiques (accessibles SANS compte)
+    const isPublicPage = [
+      '/login', '/register', '/terms', '/privacy', '/reset-password'
+    ].includes(pathname);
+    
+    // Note : '/offres' est retiré d'ici car on veut que l'API de session 
+    // soit vérifiée AVANT d'y accéder.
 
-  if (user == null) {
+    if (!user) {
+      try {
+        const response = await fetch('/api/session');
+        if (response.ok) {
+          const userData = await response.json();
+          dispatch(sessionActions.updateUser(userData));
+          // Ici, on ne fait rien, l'Outlet affichera la page demandée (ex: /offres)
+        } else if (!isPublicPage) {
+          // Si pas de session ET page non-publique (comme /offres ou /) -> Login
+          window.sessionStorage.setItem('postLogin', pathname + search);
+          navigate(newServer ? '/register' : '/login', { replace: true });
+        }
+      } catch (e) {
+        console.error("Session check failed", e);
+      } finally {
+        dispatch(sessionActions.setInitialized());
+      }
+    } else {
+      dispatch(sessionActions.setInitialized());
+    }
+  }, [[pathname, navigate, dispatch]]);
+
+  // --- LE CHANGEMENT CRITIQUE EST ICI ---
+  // Si on n'est pas initialisé, on affiche le loader.
+  // Une fois initialisé, si on n'a pas d'user, on ne bloque pas (pour laisser Navigation.jsx gérer les routes publiques)
+  if (!initialized) {
     return (<Loader />);
   }
+
+  // Si on est initialisé mais qu'on n'a pas d'utilisateur, 
+  // on laisse passer le rendu pour que les routes comme /offres dans Navigation.jsx fonctionnent.
+  if (!user) {
+    return <Outlet />; 
+  }
+
   if (termsUrl && !user.attributes.termsAccepted) {
     return (
       <TermsDialog
@@ -79,6 +101,7 @@ const App = () => {
       />
     );
   }
+
   return (
     <>
       <SocketController />

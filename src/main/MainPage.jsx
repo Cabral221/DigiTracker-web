@@ -16,13 +16,12 @@ import EventsDrawer from './EventsDrawer';
 import useFilter from './useFilter';
 import MainToolbar from './MainToolbar';
 import MainMap from './MainMap';
-import { useAttributePreference } from '../common/util/preferences';
-import { useIsSubscriber } from '../common/util/permissions';
 import Loader from '../common/components/Loader';
 // import SubscriptionPrompt from '../common/components/SubscriptionPrompt';
 import SubscriptionBanner from '../common/components/SubscriptionBanner';
 import { useLocation, useNavigate } from 'react-router-dom';
 import SubscriptionActionBanner from '../common/components/SubscriptionActionBanner';
+import SubscriptionExpiryGuard from '../common/components/SubscriptionExpiryGuard'; // Import du nouveau garde-fou
 
 const useStyles = makeStyles()((theme) => ({
   root: {
@@ -116,6 +115,13 @@ const MainPage = () => {
     [filteredPositions, selectedDeviceId]
   );
 
+  // LOGIQUE D'EXPIRATION
+  const isExpired = useMemo(() => {
+    if (!user || !user.attributes.subscriptionEndDate) return false;
+    const expiryDate = new Date(user.attributes.subscriptionEndDate);
+    return expiryDate < new Date();
+  }, [user]);
+
   const onEventsClick = useCallback(() => setEventsOpen(true), [setEventsOpen]);
 
   // =======================================================
@@ -183,6 +189,9 @@ const MainPage = () => {
   // =======================================================
   return (
     <div className={classes.root}>
+      {/* Affichage du garde-fou si expiré */}
+      {isExpired && <SubscriptionExpiryGuard />}
+
       <SubscriptionBanner />
       {/* Bannière d'abonnement */}
       {user && user.attributes.isSubscriber !== 'true' && (

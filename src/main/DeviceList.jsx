@@ -1,4 +1,3 @@
-import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 // AJOUT DE Box ET Button DANS LES IMPORTS CI-DESSOUS
 import { 
@@ -8,7 +7,6 @@ import {
 import DirectionsBusIcon from '@mui/icons-material/DirectionsBus';
 import { makeStyles } from 'tss-react/mui';
 import { devicesActions } from '../store';
-import { useTranslation } from '../common/components/LocalizationProvider';
 
 const useStyles = makeStyles()((theme) => ({
   list: { height: '100%', width: '100%', overflow: 'auto' },
@@ -19,7 +17,6 @@ const useStyles = makeStyles()((theme) => ({
 const DeviceList = ({ devices = [], groups: externalGroups }) => {
   const { classes } = useStyles();
   const dispatch = useDispatch();
-  const t = useTranslation();
   
   // 2. Priorité aux groupes filtrés de MainPage, sinon fallback sur le store
   const internalGroups = useSelector((state) => state.groups.items || {});

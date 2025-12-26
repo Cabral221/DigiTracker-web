@@ -19,9 +19,8 @@ import { sessionActions } from '../store';
 import SelectField from '../common/components/SelectField';
 import SettingsMenu from './components/SettingsMenu';
 import useCommonUserAttributes from '../common/attributes/useCommonUserAttributes';
-import { useAdministrator, useRestriction, useManager } from '../common/util/permissions';
+import { useAdministrator, useRestriction } from '../common/util/permissions';
 import { useCatch } from '../reactHelper';
-import useMapStyles from '../map/core/useMapStyles';
 import { map } from '../map/core/MapView';
 import useSettingsStyles from './common/useSettingsStyles';
 import fetchOrThrow from '../common/util/fetchOrThrow';
@@ -33,7 +32,6 @@ const UserPage = () => {
   const t = useTranslation();
 
   const admin = useAdministrator();
-  const manager = useManager();
   const fixedEmail = useRestriction('fixedEmail');
 
   const currentUser = useSelector((state) => state.session.user);
@@ -42,7 +40,6 @@ const UserPage = () => {
   const totpEnable = useSelector((state) => state.session.server.attributes.totpEnable);
   const totpForce = useSelector((state) => state.session.server.attributes.totpForce);
 
-  const mapStyles = useMapStyles();
   const commonUserAttributes = useCommonUserAttributes(t);
   const userAttributes = useUserAttributes(t);
 

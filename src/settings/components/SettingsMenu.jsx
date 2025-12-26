@@ -12,15 +12,13 @@ import PeopleIcon from '@mui/icons-material/People';
 import TodayIcon from '@mui/icons-material/Today';
 import SendIcon from '@mui/icons-material/Send';
 import DnsIcon from '@mui/icons-material/Dns';
-import HelpIcon from '@mui/icons-material/Help';
 import PaymentIcon from '@mui/icons-material/Payment';
 import CampaignIcon from '@mui/icons-material/Campaign';
-import CalculateIcon from '@mui/icons-material/Calculate';
 import { useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useTranslation } from '../../common/components/LocalizationProvider';
 import {
-  useAdministrator, useManager, useRestriction,
+  useAdministrator, useManager,
 } from '../../common/util/permissions';
 import useFeatures from '../../common/util/useFeatures';
 import MenuItem from '../../common/components/MenuItem';
@@ -29,12 +27,10 @@ const SettingsMenu = () => {
   const t = useTranslation();
   const location = useLocation();
 
-  const readonly = useRestriction('readonly');
   const admin = useAdministrator();
   const manager = useManager(); // Utilise le hook manager existant
   const user = useSelector((state) => state.session.user); // Récupérer l'utilisateur pour vérifier l'abonnement
   const userId = useSelector((state) => state.session.user.id);
-  const supportLink = useSelector((state) => state.session.server.attributes.support);
   const billingLink = useSelector((state) => state.session.user.attributes.billingLink);
 
   const features = useFeatures();

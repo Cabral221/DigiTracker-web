@@ -1,4 +1,3 @@
-import React from 'react';
 import { Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom'; // Nécessaire pour le changement de page
 import StarIcon from '@mui/icons-material/Star'; // Optionnel : pour un look plus pro

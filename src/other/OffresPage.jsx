@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import {
   Container, Typography, Button, Box, Card, CardContent, 
-  List, ListItem, ListItemIcon, ListItemText, Divider, Radio, 
+  List, ListItem, ListItemIcon, ListItemText, Link, Radio, 
   RadioGroup, FormControlLabel, FormControl, Grid, Paper, useMediaQuery
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
@@ -163,8 +163,19 @@ const OffresPage = () => {
                   </RadioGroup>
                 </FormControl>
 
-                <Button
-                  fullWidth variant="contained" size="large" onClick={handlePayment}
+                <Typography variant="caption" color="textSecondary" sx={{ mt: 2, display: 'block', textAlign: 'center' }}>
+                  En cliquant sur "ACTIVER MON COMPTE", vous acceptez nos&nbsp;
+                  <Link onClick={() => navigate('/terms')} variant="caption" sx={{ cursor: 'pointer', color: theme.palette.text.primary }}>
+                    Conditions d'Utilisation
+                  </Link>
+                  &nbsp;et notre&nbsp;
+                  <Link onClick={() => navigate('/privacy')} variant="caption" sx={{ cursor: 'pointer', color: theme.palette.text.primary }}>
+                    Politique de Confidentialité
+                  </Link>.
+                </Typography>
+                <hr />
+
+                <Button fullWidth variant="contained" size="large" onClick={handlePayment}
                   sx={{ 
                     backgroundColor: '#00853F', color: 'white', py: 2, borderRadius: 2, 
                     fontWeight: 'bold', '&:hover': { backgroundColor: '#006631' } 
@@ -173,16 +184,6 @@ const OffresPage = () => {
                   ACTIVER MON COMPTE
                 </Button>
 
-                <Typography variant="caption" color="textSecondary" sx={{ mt: 2, display: 'block', textAlign: 'center' }}>
-                  En cliquant sur "ACTIVER MON COMPTE", vous acceptez nos&nbsp;
-                  <Button variant="text" size="small" onClick={() => window.open('/terms', '_blank')}>
-                    Conditions d'Utilisation
-                  </Button>
-                  &nbsp;et notre&nbsp;
-                  <Button variant="text" size="small" onClick={() => window.open('/privacy', '_blank')}>
-                    Politique de Confidentialité
-                  </Button>.
-                </Typography>
               </CardContent>
             </Card>
             
