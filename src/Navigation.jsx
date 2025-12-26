@@ -65,6 +65,8 @@ import AuditPage from './reports/AuditPage';
 import OffresPage from './other/OffresPage';
 import { useSelector } from 'react-redux';
 import { Navigate } from 'react-router-dom';
+import TermsPage from './other/TermsPage';
+import PrivacyPage from './other/PrivacyPage';
 
 const Navigation = () => {
   const dispatch = useDispatch();
@@ -118,6 +120,9 @@ const Navigation = () => {
 
   return (
     <Routes>
+      {/* Pages Légales accessibles à tous */}
+      <Route path="/terms" element={<TermsPage />} />
+      <Route path="/privacy" element={<PrivacyPage />} />
       <Route path="/offres" element={<OffresPage />} />
 
       <Route path="/login" element={!user ? <LoginPage /> : <Navigate to="/" />} />

@@ -299,6 +299,25 @@ const LoginPage = () => {
           </div>
         )}
       </div>
+      <hr />
+      {/* Dans le bloc "extraContainer" ou juste en dessous dans LoginPage.jsx */}
+      <Box mt={2} display="flex" justifyContent="center" gap={2}>
+        <Link 
+          onClick={() => navigate('/terms')} 
+          variant="caption" 
+          sx={{ cursor: 'pointer', color: 'text.secondary' }}
+        >
+          Conditions d'Utilisation
+        </Link>
+        <Link 
+          onClick={() => navigate('/privacy')} 
+          variant="caption" 
+          sx={{ cursor: 'pointer', color: 'text.secondary' }}
+        >
+          Confidentialité
+        </Link>
+      </Box>
+
       <QrCodeDialog open={showQr} onClose={() => setShowQr(false)} />
       <Snackbar
         open={!!announcement && !announcementShown}

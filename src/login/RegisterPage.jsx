@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  Button, TextField, Typography, Snackbar, IconButton,
+  Button, TextField, Typography, Snackbar, IconButton, Box, FormControlLabel, Checkbox, Link,
 } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
 import { useNavigate } from 'react-router-dom';
@@ -45,6 +45,8 @@ const RegisterPage = () => {
   const [password, setPassword] = useState('');
   const [totpKey, setTotpKey] = useState(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
+  // Ajouter l'état pour la case à cocher
+  const [accepted, setAccepted] = useState(false);
 
   useEffectAsync(async () => {
     if (totpForce) {
@@ -55,6 +57,8 @@ const RegisterPage = () => {
 
   const handleSubmit = useCatch(async (event) => {
     event.preventDefault();
+    // Sécurité supplémentaire : on ne fait rien si non accepté
+    if (!accepted) return;
     await fetchOrThrow('/api/users', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -114,12 +118,43 @@ const RegisterPage = () => {
             }}
           />
         )}
+        {/* 2. Ajout de la Checkbox RGPD / Conditions */}
+        <Box sx={{ mt: 1, mb: 1, textAlign: 'left' }}>
+          <FormControlLabel
+            control={
+              <Checkbox 
+                size="small"
+                checked={accepted} 
+                onChange={(e) => setAccepted(e.target.checked)} 
+                color="primary"
+              />
+            }
+            label={
+              <Box component="span" sx={{ fontSize: '0.85rem' }}>
+                J'accepte les{" "}
+                <Link 
+                  onClick={() => navigate('/terms')} 
+                  sx={{ cursor: 'pointer', fontWeight: 'bold' }}
+                >
+                  Conditions d'Utilisation
+                </Link>
+                {" "}et la{" "}
+                <Link 
+                  onClick={() => navigate('/privacy')} 
+                  sx={{ cursor: 'pointer', fontWeight: 'bold' }}
+                >
+                  Politique de Confidentialité
+                </Link>
+              </Box>
+            }
+          />
+        </Box>
         <Button
           variant="contained"
           color="secondary"
           onClick={handleSubmit}
           type="submit"
-          disabled={!name || !password || !(server.newServer || /(.+)@(.+)\.(.{2,})/.test(email))}
+          disabled={!accepted || !name || !password || !(server.newServer || /(.+)@(.+)\.(.{2,})/.test(email))}
           fullWidth
         >
           {t('loginRegister')}
