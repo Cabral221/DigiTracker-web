@@ -1,7 +1,9 @@
 import { useSelector } from 'react-redux';
-import { Typography, Box } from '@mui/material';
+import { Typography, Box, Button } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 const SubscriptionBanner = () => {
+    const navigate = useNavigate();
     const user = useSelector((state) => state.session.user);
     const endDateStr = user?.attributes?.subscriptionEndDate;
 
@@ -22,16 +24,37 @@ const SubscriptionBanner = () => {
             left: '50%',
             transform: 'translateX(-50%)',
             zIndex: 1000,
-            backgroundColor: 'rgba(255, 152, 0, 0.9)', // Orange discret
+            backgroundColor: 'rgba(255, 153, 0, 0.79)', // Un peu plus opaque pour la lisibilité
             color: 'white',
-            padding: '4px 16px',
-            borderRadius: '20px',
-            boxShadow: 2,
-            pointerEvents: 'none' // Pour ne pas gêner les clics sur la carte
+            padding: '6px 16px',
+            borderRadius: '25px',
+            boxShadow: 3,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 2,
+            pointerEvents: 'auto' // Changé en 'auto' pour permettre le clic sur le bouton
         }}>
             <Typography variant="caption" sx={{ fontWeight: 'bold' }}>
-                ⏳ Abonnement annuel : expire dans {diffDays} jours
+                ⏳ Expire dans {diffDays} {diffDays === 1 ? 'jour' : 'jours'}
             </Typography>
+            
+            <Button 
+                variant="contained" 
+                size="small"
+                onClick={() => navigate('/offres')}
+                sx={{ 
+                    backgroundColor: 'white', 
+                    color: '#ff9800',
+                    fontSize: '0.7rem',
+                    fontWeight: 'bold',
+                    borderRadius: '15px',
+                    '&:hover': { backgroundColor: '#f5f5f5' },
+                    textTransform: 'none',
+                    py: 0
+                }}
+            >
+                Renouveler
+            </Button>
         </Box>
     );
 };
