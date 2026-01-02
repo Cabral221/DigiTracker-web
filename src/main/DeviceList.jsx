@@ -21,10 +21,14 @@ const DeviceList = ({ devices = [], groups: externalGroups }) => {
   // 2. Priorité aux groupes filtrés de MainPage, sinon fallback sur le store
   const internalGroups = useSelector((state) => state.groups.items || {});
   const groups = externalGroups || internalGroups;
+  
   // 3. On transforme en tableau et on filtre immédiatement le groupe racine par son nom
   const groupsArray = Object.values(groups).filter(
     (group) => group.name !== "Flotte SenBus"
   );
+
+  // --- LOGIQUE POUR LES APPAREILS PERSONNELS (SANS GROUPE) ---
+  const personalDevices = devices.filter(d => !d.groupId || d.groupId === 0);
   
   const handleLineClick = (groupId) => {
     // Vérification de sécurité avant le dispatch
@@ -46,8 +50,8 @@ const DeviceList = ({ devices = [], groups: externalGroups }) => {
     dispatch(devicesActions.setFilter({ groups: [] }));
   };
 
-  // On utilise groupsArray (déjà filtré) pour le message d'attente
-  if (groupsArray.length === 0) {
+  // --- MODIFICATION ICI : On ne bloque QUE s'il n'y a ni groupes NI appareils personnels ---
+  if (groupsArray.length === 0 && personalDevices.length === 0) {
     return <Typography sx={{ p: 2 }}>Aucune ligne disponible...</Typography>;
   }
   
@@ -56,18 +60,20 @@ const DeviceList = ({ devices = [], groups: externalGroups }) => {
     <div className={classes.header}>
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#d2b019ff' }}>
-          🇸🇳 Nos Lignes
+          {/* Titre dynamique selon le contenu */}
+          {groupsArray.length > 0 ? "🇸🇳 Nos Lignes" : "🇸🇳 Mes Appareils"}
         </Typography>
         <Button size="small" onClick={handleClearFilter} sx={{ textTransform: 'none' }}>
           Voir tout
         </Button>
       </Box>
       <Typography variant="body2" color="textSecondary">
-        Sélectionnez une ligne pour isoler les bus
+        {groupsArray.length > 0 ? "Sélectionnez une ligne pour isoler les bus" : "Gérez vos trackers personnels"}
       </Typography>
     </div>
     <Divider />
     <List>
+    {/* 1. Affichage des Groupes (pour les non-abonnés ou abonnés avec groupes) */}
     {groupsArray.map((group) => {
       const busInLine = devices.filter(d => d.groupId === group.id);
       const activeCount = busInLine.filter(d => d.status === 'online').length;
@@ -80,11 +86,32 @@ const DeviceList = ({ devices = [], groups: externalGroups }) => {
               <DirectionsBusIcon fontSize="large" color="primary" />
             </Badge>
           </ListItemIcon>
-          <ListItemText primary={<Typography variant="h6" sx={{ fontSize: '1.1rem', fontWeight: 500 }}>{group.name}</Typography>} secondary={`${busInLine.length} bus affectés • ${activeCount} en mouvement`}/>
+          <ListItemText 
+            primary={<Typography variant="h6" sx={{ fontSize: '1.1rem', fontWeight: 500 }}>{group.name}</Typography>} 
+            secondary={`${busInLine.length} bus affectés • ${activeCount} en mouvement`}
+          />
           </ListItemButton>
         </ListItem>
       );
     })}
+
+    {/* 2. Affichage des Appareils Sans Groupe (pour les nouveaux trackers de l'abonné) */}
+    {personalDevices.map((device) => (
+        <ListItem key={device.id} disablePadding divider>
+          <ListItemButton onClick={() => dispatch(devicesActions.selectId(device.id))} sx={{ py: 2 }}>
+            <ListItemIcon>
+              <DirectionsBusIcon 
+                fontSize="large" 
+                color={device.status === 'online' ? "success" : "disabled"} 
+              />
+            </ListItemIcon>
+            <ListItemText 
+              primary={<Typography variant="h6" sx={{ fontSize: '1.1rem', fontWeight: 500 }}>{device.name}</Typography>} 
+              secondary={device.status === 'online' ? 'Connecté' : 'Hors ligne'}
+            />
+          </ListItemButton>
+        </ListItem>
+      ))}
     </List>
     </div>
   );
