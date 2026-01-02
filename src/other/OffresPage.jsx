@@ -7,9 +7,6 @@ import {
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import DirectionsBusIcon from '@mui/icons-material/DirectionsBus';
-import SecurityIcon from '@mui/icons-material/Security';
-import SpeedIcon from '@mui/icons-material/Speed';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import SmartphoneIcon from '@mui/icons-material/Smartphone';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
@@ -75,36 +72,46 @@ const OffresPage = () => {
   if (!user) return null; 
 
   const handlePayment = () => {
-    
-    // 1. Gestion de Wave (Redirection manuelle ou WhatsApp pour le moment)
+    // On log systématiquement l'intention d'achat pour le debug
+    console.log("Tentative de paiement:", { 
+      plan: selectedPlan, 
+      gps: gpsQuantity, 
+      total: totalAmount,
+      method: paymentMethod 
+    });
+
+    // 1. GESTION WAVE
     if (paymentMethod === 'wave') {
-      const message = `Bonjour SenBus, je souhaite souscrire au *${PLANS_CONFIG[selectedPlan].name}* avec *${gpsQuantity}* boîtiers GPS. Total: ${totalAmount} FCFA.`;
+      const message = `Bonjour SenBus, je souhaite souscrire au *${PLANS_CONFIG[selectedPlan].name}* (${PLANS_CONFIG[selectedPlan].price} FCFA) avec *${gpsQuantity}* boîtier(s) GPS. \n\n*Total à régler : ${totalAmount} FCFA*`;
       window.open(`https://wa.me/221778435052?text=${encodeURIComponent(message)}`);
-      console.log("Détails commande:", { plan: selectedPlan, gps: gpsQuantity, total: totalAmount });
       return;
     }
     
-    // 2. Gestion de Stripe
+    // 2. GESTION STRIPE
     if (paymentMethod === 'stripe') {
-      // Si l'utilisateur a ajouté des boîtiers GPS, Stripe Checkout a besoin d'un lien dynamique.
-      // Pour simplifier sans backend lourd, si gpsQuantity > 0, on peut rediriger vers WhatsApp 
-      console.log("Détails commande:", { plan: selectedPlan, gps: gpsQuantity, total: totalAmount });
-      // ou créer des produits "Boitier" sur Stripe.
-      
+      // Cas complexe : Pack + GPS
       if (gpsQuantity > 0) {
-        alert("Pour inclure des boîtiers GPS dans votre paiement par carte, notre équipe va vous générer un lien personnalisé sur WhatsApp.");
-        const message = `Demande de lien de paiement par carte pour : ${PLANS_CONFIG[selectedPlan].name} + ${gpsQuantity} boîtiers GPS.`;
+        alert("Pour inclure des boîtiers GPS dans votre paiement par carte, notre équipe va vous générer un lien personnalisé sur WhatsApp (validation de l'adresse de livraison).");
+        const message = `Demande de lien Stripe personnalisé pour : ${PLANS_CONFIG[selectedPlan].name} + ${gpsQuantity} boîtiers GPS. (Total: ${totalAmount} FCFA)`;
         window.open(`https://wa.me/221778435052?text=${encodeURIComponent(message)}`);
         return;
       }
 
-      // Paiement direct pour le Pack seul
+      // Cas simple : Pack seul
       const endpoint = PLANS_CONFIG[selectedPlan].stripeLink;
+      
+      // Sécurité : vérifier si le lien existe
+      if (!endpoint || endpoint === '#') {
+        alert("Ce lien de paiement n'est pas encore activé. Veuillez contacter le support.");
+        return;
+      }
+
       const params = new URLSearchParams();
       if (user) {
         params.append('prefilled_email', user.email);
         params.append('client_reference_id', user.id); 
       }
+      
       window.location.href = `${endpoint}?${params.toString()}`;
     }
   };
@@ -198,7 +205,7 @@ const OffresPage = () => {
                     <RouterIcon sx={{ mr: 2, color: activeColor, fontSize: 35 }} />
                     <Box>
                       <Typography fontWeight="bold" sx={{ color: activeColor }}>Boîtier Tracker GPS 4G</Typography>
-                      <Typography variant="body2" sx={{ color: activeColor }}>Paramétré et prêt à l'emploi • 15 000 FCFA/u</Typography>
+                      <Typography variant="body2" sx={{ color: activeColor }}>Paramétré et prêt à l'emploi • 15 000 FCFA/unité</Typography>
                     </Box>
                   </Box>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, backgroundColor: '#fff', borderRadius: 2, p: 0.5, border: '1px solid #eee' }}>
@@ -218,22 +225,50 @@ const OffresPage = () => {
                       RÉSUMÉ COMMANDE
                   </Typography>
                 </Box>
-                <CardContent sx={{ p: 4 }}>
+                <CardContent sx={{ p: 4, backgroundColor: '#f1eeeeff', color: '#333' }}>
+                  {/* RÉSUMÉ DU PANIER */}
                   <Box sx={{ mb: 3 }}>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
-                      <Typography variant="body1">{PLANS_CONFIG[selectedPlan].name}</Typography>
-                      <Typography variant="body1" fontWeight="bold">{PLANS_CONFIG[selectedPlan].price.toLocaleString()} FCFA</Typography>
+                    {/* Ligne Abonnement */}
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                      <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                        {PLANS_CONFIG[selectedPlan].name}
+                      </Typography>
+                      <Typography variant="body1" fontWeight="bold">
+                        {PLANS_CONFIG[selectedPlan].price.toLocaleString()} FCFA
+                      </Typography>
                     </Box>
+                    <Typography variant="caption" sx={{ color: activeColor, display: 'block', mb: 1.5, fontWeight: 'bold' }}>
+                      • Service payable annuellement (12 mois)
+                    </Typography>
+
+                    {/* Ligne GPS (si quantité > 0) */}
                     {gpsQuantity > 0 && (
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
-                        <Typography variant="body1">{gpsQuantity} Boîtier(s) GPS</Typography>
-                        <Typography variant="body1" fontWeight="bold">{(gpsQuantity * GPS_UNIT_PRICE).toLocaleString()} FCFA</Typography>
-                      </Box>
+                      <>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                          <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                            {gpsQuantity} Boîtier(s) GPS
+                          </Typography>
+                          <Typography variant="body1" fontWeight="bold">
+                            {(gpsQuantity * GPS_UNIT_PRICE).toLocaleString()} FCFA
+                          </Typography>
+                        </Box>
+                        <Typography variant="caption" sx={{ color: '#666', display: 'block', mb: 1.5 }}>
+                          • Achat définitif (Paiement unique)
+                        </Typography>
+                      </>
                     )}
+
                     <Divider sx={{ my: 2, borderBottomWidth: 2 }} />
+
+                    {/* Total */}
                     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <Typography variant="h6" fontWeight="bold">Total à payer</Typography>
-                      <Typography variant="h6" fontWeight="black" color={activeColor}>{totalAmount.toLocaleString()} FCFA</Typography>
+                      <Box>
+                        <Typography variant="h6" fontWeight="bold">Total à payer</Typography>
+                        <Typography variant="caption" color="textSecondary">Taxes incluses</Typography>
+                      </Box>
+                      <Typography variant="h6" fontWeight="black" color={activeColor}>
+                        {totalAmount.toLocaleString()} FCFA
+                      </Typography>
                     </Box>
                   </Box>
 
@@ -242,21 +277,26 @@ const OffresPage = () => {
                     <RadioGroup value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)}>
                       <Paper variant="outlined" sx={{ mb: 2, p: 1, cursor: 'pointer', borderColor: paymentMethod === 'wave' ? activeColor : '#eee', borderWidth: paymentMethod === 'wave' ? 2 : 1 }}>
                         <FormControlLabel value="wave" control={<Radio sx={{ color: activeColor }} />} 
-                          label={<Box sx={{ display: 'flex', alignItems: 'center', ml: 1 }}><SmartphoneIcon sx={{ mr: 1, color: '#1dcaff' }} /><Typography sx={{ fontWeight: 'bold', color: '#ffffffff' }}>Wave Mobile Money</Typography></Box>} 
+                          label={<Box sx={{ display: 'flex', alignItems: 'center', ml: 1 }}><SmartphoneIcon sx={{ mr: 1, color: '#1dcaff' }} /><Typography sx={{ fontWeight: 'bold', color: isMobile ? '#333' : '#ffffffff' }}>Wave Mobile Money</Typography></Box>} 
                         />
                       </Paper>
                       <Paper variant="outlined" sx={{ p: 1, cursor: 'pointer', borderColor: paymentMethod === 'stripe' ? '#6772e5' : '#eee', borderWidth: paymentMethod === 'stripe' ? 2 : 1 }}>
                         <FormControlLabel value="stripe" control={<Radio sx={{ color: '#6772e5' }} />} 
-                          label={<Box sx={{ display: 'flex', alignItems: 'center', ml: 1 }}><CreditCardIcon sx={{ mr: 1, color: '#6772e5' }} /><Typography sx={{ fontWeight: 'bold', color: '#ffffffff' }}>Carte Bancaire (Stripe)</Typography></Box>} 
+                          label={<Box sx={{ display: 'flex', alignItems: 'center', ml: 1 }}><CreditCardIcon sx={{ mr: 1, color: '#6772e5' }} /><Typography sx={{ fontWeight: 'bold', color: isMobile ? '#333' : '#ffffffff' }}>Carte Bancaire (Stripe)</Typography></Box>} 
                         />
                       </Paper>
                     </RadioGroup>
                   </FormControl>
 
-                  <Button 
-                    fullWidth variant="contained" size="large" onClick={handlePayment} 
-                    sx={{ backgroundColor: activeColor, color: '#fff', py: 2, borderRadius: 3, fontSize: '1.1rem', fontWeight: 'bold', '&:hover': { backgroundColor: activeColor, opacity: 0.9 }, boxShadow: `0 4px 14px 0 ${activeColor}50` }}
-                  >
+                  <Button fullWidth variant="contained" size="large" 
+                    onClick={handlePayment} 
+                    sx={{ 
+                      backgroundColor: activeColor, 
+                      color: '#fff', py: 2, 
+                      borderRadius: 3, fontSize: '1.1rem', fontWeight: 'bold', 
+                      '&:hover': { backgroundColor: activeColor, opacity: 0.9 }, 
+                      boxShadow: `0 4px 14px 0 ${activeColor}50`, 
+                    }}>
                     VALIDER MON OFFRE
                   </Button>
                 </CardContent>
