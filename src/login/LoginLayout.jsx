@@ -65,15 +65,15 @@ const LoginLayout = ({ children }) => {
         <div className={classes.headerContainer}>
         {/* Logo dynamique ou fixe */}
         <LogoImage color={'#000000'} sx={{ width: '80px', margin: '0 auto' }} />
-        
+
         <Typography variant="h4" className={classes.brandTitle}>
-        SenBus
+        WayTrack
         </Typography>
-        
+
         <Typography className={classes.brandSubtitle}>
         Suivi en temps réel de vos bus de transports urbains
         </Typography>
-        
+
         <Divider sx={{ mb: 2 }} />
         </div>
         {/* --- FIN DE LA PERSONNALISATION --- */}

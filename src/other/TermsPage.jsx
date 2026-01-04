@@ -1,5 +1,5 @@
 import {
- Container, Typography, Button, Box, Paper, Divider 
+ Container, Typography, Button, Box, Paper, Divider
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -11,9 +11,9 @@ const TermsPage = () => {
     <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
       <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
         <Box display="flex" alignItems="center" mb={3}>
-          <Button 
-            startIcon={<ArrowBackIcon />} 
-            onClick={() => navigate(-1)} 
+          <Button
+            startIcon={<ArrowBackIcon />}
+            onClick={() => navigate(-1)}
             sx={{ mr: 2 }}
           >
             Retour
@@ -22,31 +22,31 @@ const TermsPage = () => {
             Conditions Générales d'Utilisation
           </Typography>
         </Box>
-        
+
         <Divider sx={{ mb: 3 }} />
 
         <Box sx={{ lineHeight: 1.7 }}>
           <Box sx={{ p: 3 }}>
-            
+
             <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mt: 2 }}>
               1. Nature du Service
             </Typography>
             <Typography variant="body2" color="textSecondary" paragraph>
-              SenBus est une solution de gestion de flotte basée sur le protocole Traccar. Le service inclut le suivi en temps réel, la gestion des dispositifs, et l'accès aux rapports d'activité.
+              WayTrack est une solution de gestion de flotte basée sur le protocole Traccar. Le service inclut le suivi en temps réel, la gestion des dispositifs, et l'accès aux rapports d'activité.
             </Typography>
 
             <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mt: 2 }}>
               2. Responsabilité de l'Utilisateur
             </Typography>
             <Typography variant="body2" color="textSecondary" paragraph>
-              L'utilisateur est seul responsable de la conformité légale de l'installation des balises. Il est strictement interdit d'utiliser SenBus pour suivre des personnes à leur insu ou sans base légale valide.
+              L'utilisateur est seul responsable de la conformité légale de l'installation des balises. Il est strictement interdit d'utiliser WayTrack pour suivre des personnes à leur insu ou sans base légale valide.
             </Typography>
 
             <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mt: 2 }}>
               3. Disponibilité du Serveur
             </Typography>
             <Typography variant="body2" color="textSecondary" paragraph>
-              Bien que nous visions une disponibilité de 99.9%, SenBus ne peut être tenu responsable des pertes de données liées à une défaillance de couverture réseau GSM ou à une maintenance technique du serveur.
+              Bien que nous visions une disponibilité de 99.9%, WayTrack ne peut être tenu responsable des pertes de données liées à une défaillance de couverture réseau GSM ou à une maintenance technique du serveur.
             </Typography>
 
             <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mt: 2 }}>

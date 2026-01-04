@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import {
-  Container, Typography, Button, Box, Card, CardContent, 
-  List, ListItem, ListItemIcon, ListItemText, Radio, 
+  Container, Typography, Button, Box, Card, CardContent,
+  List, ListItem, ListItemIcon, ListItemText, Radio,
   RadioGroup, FormControlLabel, FormControl, Grid, Paper, useMediaQuery, IconButton, Divider
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
@@ -22,40 +22,40 @@ const OffresPage = () => {
   const user = useSelector((state) => state.session.user);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  
+
   const [paymentMethod, setPaymentMethod] = useState('wave');
   const [selectedPlan, setSelectedPlan] = useState('basic');
   const [gpsQuantity, setGpsQuantity] = useState(0);
 
   // CHARTE GRAPHIQUE & PRIX
   const SOLO_COLOR = '#FF9800';
-  const BASIC_COLOR = '#00853F'; 
-  const PRO_COLOR = '#1A237E'; 
+  const BASIC_COLOR = '#00853F';
+  const PRO_COLOR = '#1A237E';
   const BUSINESS_COLOR = '#D32F2F';
   const GPS_UNIT_PRICE = 15000;
 
   // Configuration des plans avec leurs fonctionnalités respectives
   const PLANS_CONFIG = {
-    solo: { 
-      name: 'Pack Solo', price: 15000, vehicles: 1, color: SOLO_COLOR, 
+    solo: {
+      name: 'Pack Solo', price: 15000, vehicles: 1, color: SOLO_COLOR,
       desc: "Sécurité maximale pour votre véhicule personnel.",
       features: ["1 Véhicule", "Coupure moteur", "Position temps réel", "Support Standard"],
       stripeLink: '#',
     },
-    basic: { 
-      name: 'Pack Familial', price: 45000, vehicles: 5, color: BASIC_COLOR, 
+    basic: {
+      name: 'Pack Familial', price: 45000, vehicles: 5, color: BASIC_COLOR,
       desc: "Idéal pour protéger les véhicules de la famille.",
       features: ["Jusqu'à 5 véhicules", "Coupure moteur", "Rapports de trajets", "Support Prioritaire"],
       stripeLink: 'https://buy.stripe.com/test_00wcMYe9Y4FJ11a3WL0ZW00'
     },
-    pro: { 
-      name: 'Pack Flotte Pro', price: 85000, vehicles: 15, color: PRO_COLOR, 
+    pro: {
+      name: 'Pack Flotte Pro', price: 85000, vehicles: 15, color: PRO_COLOR,
       desc: "Optimisé pour la gestion de flotte intensive.",
       features: ["Jusqu'à 15 véhicules", "Alertes vitesse/zone", "Historique 90 jours", "Gestionnaire dédié"],
       stripeLink: '#'
     },
-    business: { 
-      name: 'Pack Business+', price: 250000, vehicles: 50, color: BUSINESS_COLOR, 
+    business: {
+      name: 'Pack Business+', price: 250000, vehicles: 50, color: BUSINESS_COLOR,
       desc: "Solution complète pour grandes entreprises.",
       features: ["Jusqu'à 50 véhicules", "API Intégration", "Rapports personnalisés", "Support VIP 24/7"],
       stripeLink: '#'
@@ -64,29 +64,29 @@ const OffresPage = () => {
 
   const activeColor = PLANS_CONFIG[selectedPlan].color;
   const totalAmount = PLANS_CONFIG[selectedPlan].price + (gpsQuantity * GPS_UNIT_PRICE);
-  
+
   useEffect(() => {
     if (!user) { navigate('/login'); }
   }, [user, navigate]);
 
-  if (!user) return null; 
+  if (!user) return null;
 
   const handlePayment = () => {
     // On log systématiquement l'intention d'achat pour le debug
-    console.log("Tentative de paiement:", { 
-      plan: selectedPlan, 
-      gps: gpsQuantity, 
+    console.log("Tentative de paiement:", {
+      plan: selectedPlan,
+      gps: gpsQuantity,
       total: totalAmount,
-      method: paymentMethod 
+      method: paymentMethod
     });
 
     // 1. GESTION WAVE
     if (paymentMethod === 'wave') {
-      const message = `Bonjour SenBus, je souhaite souscrire au *${PLANS_CONFIG[selectedPlan].name}* (${PLANS_CONFIG[selectedPlan].price} FCFA) avec *${gpsQuantity}* boîtier(s) GPS. \n\n*Total à régler : ${totalAmount} FCFA*`;
+      const message = `Bonjour WayTrack, je souhaite souscrire au *${PLANS_CONFIG[selectedPlan].name}* (${PLANS_CONFIG[selectedPlan].price} FCFA) avec *${gpsQuantity}* boîtier(s) GPS. \n\n*Total à régler : ${totalAmount} FCFA*`;
       window.open(`https://wa.me/221778435052?text=${encodeURIComponent(message)}`);
       return;
     }
-    
+
     // 2. GESTION STRIPE
     if (paymentMethod === 'stripe') {
       // Cas complexe : Pack + GPS
@@ -99,7 +99,7 @@ const OffresPage = () => {
 
       // Cas simple : Pack seul
       const endpoint = PLANS_CONFIG[selectedPlan].stripeLink;
-      
+
       // Sécurité : vérifier si le lien existe
       if (!endpoint || endpoint === '#') {
         alert("Ce lien de paiement n'est pas encore activé. Veuillez contacter le support.");
@@ -109,21 +109,21 @@ const OffresPage = () => {
       const params = new URLSearchParams();
       if (user) {
         params.append('prefilled_email', user.email);
-        params.append('client_reference_id', user.id); 
+        params.append('client_reference_id', user.id);
       }
-      
+
       window.location.href = `${endpoint}?${params.toString()}`;
     }
   };
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: '#FFFFFF', color: '#333333' }}>
-      
+
       {/* BOUTON RETOUR */}
       <Box sx={{ p: 2 }}>
         <Container maxWidth="lg">
-          <Button 
-            onClick={() => navigate(-1)} 
+          <Button
+            onClick={() => navigate(-1)}
             startIcon={<ArrowBackIosNewIcon sx={{ fontSize: '1rem' }} />}
             sx={{ color: '#666', textTransform: 'none', fontWeight: 'bold' }}
           >
@@ -139,7 +139,7 @@ const OffresPage = () => {
             <Box sx={{ textAlign: 'center', mb: 6 }} display={isMobile ? 'block' : 'flex'} alignItems="center" justifyContent="center">
               <LogoImage color={activeColor} />
               <Typography variant={isMobile ? "h4" : "h3"} fontWeight="bold" sx={{ mt: 2, mb: 1, color: activeColor }}>
-                SenBus Manager
+                WayTrack Manager
                 <Typography variant="h6" sx={{ color: '#555' }}>
                   Choisissez le forfait adapté à votre flotte.
                 </Typography>
@@ -153,12 +153,12 @@ const OffresPage = () => {
               <Grid container spacing={2}>
                 {Object.entries(PLANS_CONFIG).map(([key, config]) => (
                   <Grid item xs={12} sm={6} key={key}>
-                    <Paper 
+                    <Paper
                       elevation={selectedPlan === key ? 6 : 1}
                       onClick={() => setSelectedPlan(key)}
-                      sx={{ 
-                        p: 0, cursor: 'pointer', borderRadius: 4, border: '2px solid', 
-                        borderColor: selectedPlan === key ? config.color : '#eee', 
+                      sx={{
+                        p: 0, cursor: 'pointer', borderRadius: 4, border: '2px solid',
+                        borderColor: selectedPlan === key ? config.color : '#eee',
                         backgroundColor: '#fff', transition: 'all 0.3s ease',
                         overflow: 'hidden',
                         height: '100%',
@@ -171,7 +171,7 @@ const OffresPage = () => {
                         <Typography variant="h5" fontWeight="black">{config.price.toLocaleString()} FCFA</Typography>
                         <Typography variant="caption" sx={{ opacity: 0.8 }}>{config.vehicles} véhicule(s) / An</Typography>
                       </Box>
-                      
+
                       {/* Corps de la carte : Fonctionnalités */}
                       <Box sx={{ p: 2, flexGrow: 1 }}>
                         <List dense>
@@ -185,7 +185,7 @@ const OffresPage = () => {
                           ))}
                         </List>
                       </Box>
-                      
+
                       {/* Note descriptive bas de carte */}
                       <Box sx={{ p: 2, pt: 0 }}>
                          <Typography variant="caption" sx={{ color: '#888', fontStyle: 'italic', display: 'block', lineHeight: 1.2 }}>
@@ -276,26 +276,26 @@ const OffresPage = () => {
                   <FormControl component="fieldset" sx={{ width: '100%', mb: 3 }}>
                     <RadioGroup value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)}>
                       <Paper variant="outlined" sx={{ mb: 2, p: 1, cursor: 'pointer', borderColor: paymentMethod === 'wave' ? activeColor : '#eee', borderWidth: paymentMethod === 'wave' ? 2 : 1 }}>
-                        <FormControlLabel value="wave" control={<Radio sx={{ color: activeColor }} />} 
-                          label={<Box sx={{ display: 'flex', alignItems: 'center', ml: 1 }}><SmartphoneIcon sx={{ mr: 1, color: '#1dcaff' }} /><Typography sx={{ fontWeight: 'bold', color: isMobile ? '#333' : '#ffffffff' }}>Wave Mobile Money</Typography></Box>} 
+                        <FormControlLabel value="wave" control={<Radio sx={{ color: activeColor }} />}
+                          label={<Box sx={{ display: 'flex', alignItems: 'center', ml: 1 }}><SmartphoneIcon sx={{ mr: 1, color: '#1dcaff' }} /><Typography sx={{ fontWeight: 'bold', color: isMobile ? '#333' : '#ffffffff' }}>Wave Mobile Money</Typography></Box>}
                         />
                       </Paper>
                       <Paper variant="outlined" sx={{ p: 1, cursor: 'pointer', borderColor: paymentMethod === 'stripe' ? '#6772e5' : '#eee', borderWidth: paymentMethod === 'stripe' ? 2 : 1 }}>
-                        <FormControlLabel value="stripe" control={<Radio sx={{ color: '#6772e5' }} />} 
-                          label={<Box sx={{ display: 'flex', alignItems: 'center', ml: 1 }}><CreditCardIcon sx={{ mr: 1, color: '#6772e5' }} /><Typography sx={{ fontWeight: 'bold', color: isMobile ? '#333' : '#ffffffff' }}>Carte Bancaire (Stripe)</Typography></Box>} 
+                        <FormControlLabel value="stripe" control={<Radio sx={{ color: '#6772e5' }} />}
+                          label={<Box sx={{ display: 'flex', alignItems: 'center', ml: 1 }}><CreditCardIcon sx={{ mr: 1, color: '#6772e5' }} /><Typography sx={{ fontWeight: 'bold', color: isMobile ? '#333' : '#ffffffff' }}>Carte Bancaire (Stripe)</Typography></Box>}
                         />
                       </Paper>
                     </RadioGroup>
                   </FormControl>
 
-                  <Button fullWidth variant="contained" size="large" 
-                    onClick={handlePayment} 
-                    sx={{ 
-                      backgroundColor: activeColor, 
-                      color: '#fff', py: 2, 
-                      borderRadius: 3, fontSize: '1.1rem', fontWeight: 'bold', 
-                      '&:hover': { backgroundColor: activeColor, opacity: 0.9 }, 
-                      boxShadow: `0 4px 14px 0 ${activeColor}50`, 
+                  <Button fullWidth variant="contained" size="large"
+                    onClick={handlePayment}
+                    sx={{
+                      backgroundColor: activeColor,
+                      color: '#fff', py: 2,
+                      borderRadius: 3, fontSize: '1.1rem', fontWeight: 'bold',
+                      '&:hover': { backgroundColor: activeColor, opacity: 0.9 },
+                      boxShadow: `0 4px 14px 0 ${activeColor}50`,
                     }}>
                     VALIDER MON OFFRE
                   </Button>
@@ -311,12 +311,12 @@ const OffresPage = () => {
         <Container maxWidth="lg">
           <Grid container alignItems="center" justifyContent="space-between">
             <Grid item xs={12} md={6} sx={{ textAlign: isMobile ? 'center' : 'left', mb: isMobile ? 2 : 0 }}>
-              <Typography variant="body2" sx={{ color: '#333', fontWeight: 'bold' }}>© 2024 SenBus - Tracking GPS Professionnel.</Typography>
+              <Typography variant="body2" sx={{ color: '#333', fontWeight: 'bold' }}>© 2024 WayTrack - Tracking GPS Professionnel.</Typography>
             </Grid>
             <Grid item xs={12} md={6} sx={{ textAlign: isMobile ? 'center' : 'right' }}>
-              <Button 
-                startIcon={<WhatsAppIcon />} 
-                sx={{ color: '#25D366', fontWeight: 'bold', textTransform: 'none' }} 
+              <Button
+                startIcon={<WhatsAppIcon />}
+                sx={{ color: '#25D366', fontWeight: 'bold', textTransform: 'none' }}
                 onClick={() => window.open('https://wa.me/221778435052')}
               >
                 Assistance technique WhatsApp

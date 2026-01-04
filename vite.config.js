@@ -13,7 +13,7 @@ export default defineConfig(() => ({
         ws: true,                        // Activation cruciale pour le temps réel
         changeOrigin: true,
         // Ajoute ceci pour éviter que Vite ne coupe la connexion trop vite
-        timeout: 30000, 
+        timeout: 30000,
         proxyTimeout: 30000,
       },
       '/api': {
@@ -36,8 +36,8 @@ export default defineConfig(() => ({
         globPatterns: ['**/*.{js,css,html,woff,woff2,mp3}'],
       },
       manifest: {
-        short_name: 'DigiTracker',
-        name: 'Digitracker - Systéme de suivi',
+        short_name: 'WayTrack',
+        name: 'WayTrack - Systéme de suivi',
         theme_color: '${colorPrimary}',
         icons: [
           {

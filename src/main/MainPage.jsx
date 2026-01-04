@@ -10,7 +10,7 @@ import DeviceList from './DeviceList';
 import BottomMenu from '../common/components/BottomMenu';
 import StatusCard from '../common/components/StatusCard';
 import { devicesActions } from '../store'; // Import groupé
-import { errorsActions } from '../store/errors'; 
+import { errorsActions } from '../store/errors';
 import usePersistedState from '../common/util/usePersistedState';
 import EventsDrawer from './EventsDrawer';
 import useFilter from './useFilter';
@@ -85,7 +85,7 @@ const MainPage = () => {
 
   const selectedDeviceId = useSelector((state) => state.devices.selectedId);
   const positions = useSelector((state) => state.session.positions);
-  
+
   // Déclaration de tous les states
   const [filteredPositions, setFilteredPositions] = useState([]);
   const [filteredDevices, setFilteredDevices] = useState([]);
@@ -103,14 +103,14 @@ const MainPage = () => {
     const allGroups = state.groups.items || {};
     const filtered = {};
     Object.keys(allGroups).forEach(id => {
-      if (allGroups[id].name !== "Flotte SenBus") {
+      if (allGroups[id].name !== "WayTrack") {
         filtered[id] = allGroups[id];
       }
     });
     return filtered;
   });
 
-  const selectedPosition = useMemo(() => 
+  const selectedPosition = useMemo(() =>
     filteredPositions.find((position) => selectedDeviceId && position.deviceId === selectedDeviceId),
     [filteredPositions, selectedDeviceId]
   );
@@ -132,7 +132,7 @@ const MainPage = () => {
     if (params.get('paiement') === 'succes') {
       const newUrl = `${window.location.pathname}?confirme=true`;
       window.history.replaceState({}, document.title, newUrl);
-      window.location.reload(); 
+      window.location.reload();
     }
   }, [location]);
 
@@ -143,7 +143,7 @@ const MainPage = () => {
     if (initialized) {
       const params = new URLSearchParams(location.search);
       if (params.get('confirme') === 'true') {
-        dispatch(errorsActions.push("Félicitations ! Votre abonnement SenBus est désormais actif. 🚀"));
+        dispatch(errorsActions.push("Félicitations ! Votre abonnement WayTrack est désormais actif. 🚀"));
         navigate(location.pathname, { replace: true });
       }
     }
@@ -158,8 +158,8 @@ const MainPage = () => {
 
   // Filtrage des groupes
   const memoizedFilter = useMemo(() => {
-    const selectedGroups = globalFilter.groups && globalFilter.groups.length > 0 
-      ? globalFilter.groups 
+    const selectedGroups = globalFilter.groups && globalFilter.groups.length > 0
+      ? globalFilter.groups
       : (filter.groups || []);
     const excludedGroupId = 1;
     const filteredGroups = selectedGroups.filter(id => Number(id) !== excludedGroupId);
@@ -243,8 +243,8 @@ const MainPage = () => {
       </div>
       <EventsDrawer open={eventsOpen} onClose={() => setEventsOpen(false)} />
       {selectedDeviceId && (filteredDevices.length === 1 || isManualSelection) && (
-        <div style={{ 
-          position: 'fixed', 
+        <div style={{
+          position: 'fixed',
           bottom: desktop ? '20px' : '100px',
           left: desktop ? theme.dimensions.drawerWidthDesktop : '10px',
           right: '10px',
@@ -257,7 +257,7 @@ const MainPage = () => {
               position={selectedPosition}
               onClose={() => {
                 dispatch(devicesActions.selectId(null));
-                setIsManualSelection(false); 
+                setIsManualSelection(false);
               }}
               desktopPadding={0}
             />

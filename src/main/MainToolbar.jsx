@@ -149,7 +149,7 @@ const MainToolbar = ({
               {/* AJOUT DU FILTRE ICI */}
               {Object.values(groups)
                 // Filtre dynamique : on exclut le groupe racine par son nom
-                .filter((group) => group.name !== "Flotte SenBus")
+                .filter((group) => group.name !== "WayTrack")
                 .sort((a, b) => a.name.localeCompare(b.name))
                 .map((group) => (
                   <MenuItem key={group.id} value={group.id}>
