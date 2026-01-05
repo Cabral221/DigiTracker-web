@@ -64,7 +64,7 @@ const LoginLayout = ({ children }) => {
         {/* --- DÉBUT DE LA PERSONNALISATION --- */}
         <div className={classes.headerContainer}>
         {/* Logo dynamique ou fixe */}
-        <LogoImage color={'#000000'} sx={{ width: '80px', margin: '0 auto' }} />
+        {/* <LogoImage color={'#000000'} sx={{ width: '80px', margin: '0 auto' }} /> */}
 
         <Typography variant="h4" className={classes.brandTitle}>
         WayTrack
