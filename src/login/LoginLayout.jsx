@@ -1,6 +1,7 @@
 import { Paper } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
 import { Typography, Divider } from '@mui/material';
+import LogoImage from './LogoImage';
 
 const useStyles = makeStyles()((theme) => ({
   root: {
@@ -65,9 +66,7 @@ const LoginLayout = ({ children }) => {
         {/* Logo dynamique ou fixe */}
         {/* <LogoImage color={'#000000'} sx={{ width: '80px', margin: '0 auto' }} /> */}
 
-        <Typography variant="h4" className={classes.brandTitle}>
-        WayTracker
-        </Typography>
+        <LogoImage color={'#000000'} type="inverted"/>
 
         <Typography className={classes.brandSubtitle}>
         Suivi en temps réel de vos bus de transports urbains
