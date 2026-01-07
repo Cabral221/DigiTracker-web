@@ -1,5 +1,5 @@
 import {
- Container, Typography, Button, Box, Paper, Divider 
+ Container, Typography, Button, Box, Paper, Divider
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -11,9 +11,9 @@ const PrivacyPage = () => {
     <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
       <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
         <Box display="flex" alignItems="center" mb={3}>
-          <Button 
-            startIcon={<ArrowBackIcon />} 
-            onClick={() => navigate(-1)} 
+          <Button
+            startIcon={<ArrowBackIcon />}
+            onClick={() => navigate(-1)}
             sx={{ mr: 2 }}
           >
             Retour
@@ -22,7 +22,7 @@ const PrivacyPage = () => {
               Politique de Confidentialité
             </Typography>
         </Box>
-        
+
         <Divider sx={{ mb: 3 }} />
 
         <Box sx={{ lineHeight: 1.7 }}>
@@ -52,7 +52,7 @@ const PrivacyPage = () => {
               4. Partage des Données
             </Typography>
             <Typography variant="body2" color="textSecondary" paragraph>
-              SenBus ne vend aucune donnée de localisation. Vos informations ne sont accessibles qu'à vous-même et, dans des cas strictement limités, aux administrateurs système pour le support technique.
+              WayTrack ne vend aucune donnée de localisation. Vos informations ne sont accessibles qu'à vous-même et, dans des cas strictement limités, aux administrateurs système pour le support technique.
             </Typography>
           </Box>
         </Box>

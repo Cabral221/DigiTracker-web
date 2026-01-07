@@ -60,7 +60,7 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const t = useTranslation();
-  
+
   const user = useSelector((state) => state.session.user);
   const initialized = useSelector((state) => state.session.initialized);
 
@@ -302,16 +302,16 @@ const LoginPage = () => {
       <hr />
       {/* Dans le bloc "extraContainer" ou juste en dessous dans LoginPage.jsx */}
       <Box mt={2} display="flex" justifyContent="center" gap={2}>
-        <Link 
-          onClick={() => navigate('/terms')} 
-          variant="caption" 
+        <Link
+          onClick={() => navigate('/terms')}
+          variant="caption"
           sx={{ cursor: 'pointer', color: 'text.secondary' }}
         >
           Conditions d'Utilisation
         </Link>
-        <Link 
-          onClick={() => navigate('/privacy')} 
-          variant="caption" 
+        <Link
+          onClick={() => navigate('/privacy')}
+          variant="caption"
           sx={{ cursor: 'pointer', color: 'text.secondary' }}
         >
           Confidentialité

@@ -1,6 +1,5 @@
 import { Paper } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
-import LogoImage from './LogoImage';
 import { Typography, Divider } from '@mui/material';
 
 const useStyles = makeStyles()((theme) => ({
@@ -64,16 +63,16 @@ const LoginLayout = ({ children }) => {
         {/* --- DÉBUT DE LA PERSONNALISATION --- */}
         <div className={classes.headerContainer}>
         {/* Logo dynamique ou fixe */}
-        <LogoImage color={'#000000'} sx={{ width: '80px', margin: '0 auto' }} />
-        
+        {/* <LogoImage color={'#000000'} sx={{ width: '80px', margin: '0 auto' }} /> */}
+
         <Typography variant="h4" className={classes.brandTitle}>
-        SenBus
+        WayTrack
         </Typography>
-        
+
         <Typography className={classes.brandSubtitle}>
         Suivi en temps réel de vos bus de transports urbains
         </Typography>
-        
+
         <Divider sx={{ mb: 2 }} />
         </div>
         {/* --- FIN DE LA PERSONNALISATION --- */}

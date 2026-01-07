@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux'; // Ajout de useSelector
 import { useNavigate } from 'react-router-dom';
 import {
- Button, Typography, Box, Paper, Stack, Divider 
+ Button, Typography, Box, Paper, Stack, Divider
 } from '@mui/material';
 import PaymentIcon from '@mui/icons-material/Payment';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
@@ -11,7 +11,7 @@ import { sessionActions } from '../../store'; // Ajusté selon votre import Main
 const SubscriptionPrompt = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  
+
   // 1. On récupère l'utilisateur pour pré-remplir l'email sur Stripe
   const user = useSelector((state) => state.session.user);
 
@@ -42,9 +42,9 @@ const SubscriptionPrompt = () => {
     >
       <Paper elevation={6} sx={{ padding: 5, textAlign: 'center', maxWidth: 480, borderRadius: 3 }}>
         <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: '#1976d2' }}>
-          DigiTracker Sénégal 🚌
+          WayTrack Sénégal 🚌
         </Typography>
-        
+
         <Typography variant="h6" sx={{ mt: 2, mb: 1 }}>
           Abonnement Annuel Requis
         </Typography>

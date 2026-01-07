@@ -9,15 +9,15 @@ export default defineConfig(() => ({
     port: 3000,
     proxy: {
       '/api/socket': {
-        target: 'http://localhost:8085', // Utilisez http ici, Vite s'occupe de la conversion
+        target: 'http://localhost:8082', // Utilisez http ici, Vite s'occupe de la conversion
         ws: true,                        // Activation cruciale pour le temps réel
         changeOrigin: true,
         // Ajoute ceci pour éviter que Vite ne coupe la connexion trop vite
-        timeout: 30000, 
+        timeout: 30000,
         proxyTimeout: 30000,
       },
       '/api': {
-        target: 'http://localhost:8085',
+        target: 'http://localhost:8082',
         changeOrigin: true,
       },
     },
@@ -36,8 +36,8 @@ export default defineConfig(() => ({
         globPatterns: ['**/*.{js,css,html,woff,woff2,mp3}'],
       },
       manifest: {
-        short_name: 'DigiTracker',
-        name: 'Digitracker - Systéme de suivi',
+        short_name: 'WayTrack',
+        name: 'WayTrack - Systéme de suivi',
         theme_color: '${colorPrimary}',
         icons: [
           {
