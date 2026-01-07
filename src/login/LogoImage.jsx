@@ -1,7 +1,8 @@
 import { useTheme, useMediaQuery } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { makeStyles } from 'tss-react/mui';
-import Logo from '../resources/images/logo.svg?react';
+import Logo from '../resources/images/logo-waytracker.png';
+import LogoInverted from '../resources/images/logo-waytracker-inverted.png';
 
 const useStyles = makeStyles()((theme) => ({
   image: {
@@ -14,7 +15,7 @@ const useStyles = makeStyles()((theme) => ({
   },
 }));
 
-const LogoImage = ({ color }) => {
+const LogoImage = ({ color, type }) => {
   const theme = useTheme();
   const { classes } = useStyles();
 
@@ -29,7 +30,12 @@ const LogoImage = ({ color }) => {
     }
     return <img className={classes.image} src={logo} alt="" />;
   }
-  return <Logo className={classes.image} style={{ color }} />;
+
+  if (type === 'inverted') {
+    return <img className={classes.image} style={{ color }} src={LogoInverted} />;
+  }
+
+  return <img className={classes.image} style={{ color }} src={Logo} />;
 };
 
 export default LogoImage;
