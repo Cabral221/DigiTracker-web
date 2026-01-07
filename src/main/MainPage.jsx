@@ -103,7 +103,7 @@ const MainPage = () => {
     const allGroups = state.groups.items || {};
     const filtered = {};
     Object.keys(allGroups).forEach(id => {
-      if (allGroups[id].name !== "WayTrack") {
+      if (allGroups[id].name !== "WayTracker") {
         filtered[id] = allGroups[id];
       }
     });
@@ -143,7 +143,7 @@ const MainPage = () => {
     if (initialized) {
       const params = new URLSearchParams(location.search);
       if (params.get('confirme') === 'true') {
-        dispatch(errorsActions.push("Félicitations ! Votre abonnement WayTrack est désormais actif. 🚀"));
+        dispatch(errorsActions.push("Félicitations ! Votre abonnement WayTracker est désormais actif. 🚀"));
         navigate(location.pathname, { replace: true });
       }
     }

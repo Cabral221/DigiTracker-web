@@ -66,7 +66,7 @@ const LoginLayout = ({ children }) => {
         {/* <LogoImage color={'#000000'} sx={{ width: '80px', margin: '0 auto' }} /> */}
 
         <Typography variant="h4" className={classes.brandTitle}>
-        WayTrack
+        WayTracker
         </Typography>
 
         <Typography className={classes.brandSubtitle}>

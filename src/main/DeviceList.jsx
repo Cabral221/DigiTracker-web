@@ -24,7 +24,7 @@ const DeviceList = ({ devices = [], groups: externalGroups }) => {
 
   // 3. On transforme en tableau et on filtre immédiatement le groupe racine par son nom
   const groupsArray = Object.values(groups).filter(
-    (group) => group.name !== "WayTrack"
+    (group) => group.name !== "WayTracker"
   );
 
   // --- LOGIQUE POUR LES APPAREILS PERSONNELS (SANS GROUPE) ---

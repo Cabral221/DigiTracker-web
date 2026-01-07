@@ -42,7 +42,7 @@ const SubscriptionPrompt = () => {
     >
       <Paper elevation={6} sx={{ padding: 5, textAlign: 'center', maxWidth: 480, borderRadius: 3 }}>
         <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: '#1976d2' }}>
-          WayTrack Sénégal 🚌
+          WayTracker Sénégal 🚌
         </Typography>
 
         <Typography variant="h6" sx={{ mt: 2, mb: 1 }}>

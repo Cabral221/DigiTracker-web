@@ -82,7 +82,7 @@ const OffresPage = () => {
 
     // 1. GESTION WAVE
     if (paymentMethod === 'wave') {
-      const message = `Bonjour WayTrack, je souhaite souscrire au *${PLANS_CONFIG[selectedPlan].name}* (${PLANS_CONFIG[selectedPlan].price} FCFA) avec *${gpsQuantity}* boîtier(s) GPS. \n\n*Total à régler : ${totalAmount} FCFA*`;
+      const message = `Bonjour WayTracker, je souhaite souscrire au *${PLANS_CONFIG[selectedPlan].name}* (${PLANS_CONFIG[selectedPlan].price} FCFA) avec *${gpsQuantity}* boîtier(s) GPS. \n\n*Total à régler : ${totalAmount} FCFA*`;
       window.open(`https://wa.me/221778435052?text=${encodeURIComponent(message)}`);
       return;
     }
@@ -139,7 +139,7 @@ const OffresPage = () => {
             <Box sx={{ textAlign: 'center', mb: 6 }} display={isMobile ? 'block' : 'flex'} alignItems="center" justifyContent="center">
               <LogoImage color={activeColor} />
               <Typography variant={isMobile ? "h4" : "h3"} fontWeight="bold" sx={{ mt: 2, mb: 1, color: activeColor }}>
-                WayTrack Manager
+                WayTracker Manager
                 <Typography variant="h6" sx={{ color: '#555' }}>
                   Choisissez le forfait adapté à votre flotte.
                 </Typography>
@@ -311,7 +311,7 @@ const OffresPage = () => {
         <Container maxWidth="lg">
           <Grid container alignItems="center" justifyContent="space-between">
             <Grid item xs={12} md={6} sx={{ textAlign: isMobile ? 'center' : 'left', mb: isMobile ? 2 : 0 }}>
-              <Typography variant="body2" sx={{ color: '#333', fontWeight: 'bold' }}>© 2024 WayTrack - Tracking GPS Professionnel.</Typography>
+              <Typography variant="body2" sx={{ color: '#333', fontWeight: 'bold' }}>© 2024 WayTracker - Tracking GPS Professionnel.</Typography>
             </Grid>
             <Grid item xs={12} md={6} sx={{ textAlign: isMobile ? 'center' : 'right' }}>
               <Button
