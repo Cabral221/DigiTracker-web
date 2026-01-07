@@ -52,7 +52,7 @@ const PrivacyPage = () => {
               4. Partage des Données
             </Typography>
             <Typography variant="body2" color="textSecondary" paragraph>
-              WayTrack ne vend aucune donnée de localisation. Vos informations ne sont accessibles qu'à vous-même et, dans des cas strictement limités, aux administrateurs système pour le support technique.
+              WayTracker ne vend aucune donnée de localisation. Vos informations ne sont accessibles qu'à vous-même et, dans des cas strictement limités, aux administrateurs système pour le support technique.
             </Typography>
           </Box>
         </Box>

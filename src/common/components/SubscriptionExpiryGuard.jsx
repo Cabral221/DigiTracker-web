@@ -39,7 +39,7 @@ const SubscriptionExpiryGuard = () => {
           Accès Suspendu
         </Typography>
         <Typography variant="body1" color="textSecondary" sx={{ mb: 4 }}>
-          Votre abonnement WayTrack est arrivé à terme. Vos données sont conservées, mais l'accès à la carte nécessite un renouvellement.
+          Votre abonnement WayTracker est arrivé à terme. Vos données sont conservées, mais l'accès à la carte nécessite un renouvellement.
         </Typography>
 
         <Stack spacing={2}>

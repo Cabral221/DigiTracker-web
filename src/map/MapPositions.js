@@ -45,7 +45,7 @@ const MapPositions = ({ positions, onMapClick, onMarkerClick, showStatus, select
       fixTime: formatTime(position.fixTime, 'seconds'),
       category: mapIconKey(device.category),
       // Correction ici : On ignore les couleurs personnalisées des attributs
-      // pour forcer nos icônes WayTrack (success/error/neutral)
+      // pour forcer nos icônes WayTracker (success/error/neutral)
       color: showStatus ? getStatusColor(device.status) : 'neutral',
       rotation: position.course,
       direction: showDirection,

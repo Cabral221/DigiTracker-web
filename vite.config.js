@@ -36,8 +36,8 @@ export default defineConfig(() => ({
         globPatterns: ['**/*.{js,css,html,woff,woff2,mp3}'],
       },
       manifest: {
-        short_name: 'WayTrack',
-        name: 'WayTrack - Systéme de suivi',
+        short_name: 'WayTracker',
+        name: 'WayTracker - Systéme de suivi',
         theme_color: '${colorPrimary}',
         icons: [
           {
