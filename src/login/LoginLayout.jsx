@@ -66,7 +66,7 @@ const LoginLayout = ({ children }) => {
         {/* Logo dynamique ou fixe */}
         {/* <LogoImage color={'#000000'} sx={{ width: '80px', margin: '0 auto' }} /> */}
 
-        <LogoImage color={'#000000'} type="inverted"/>
+        <LogoImage inverted={true} />
 
         <Typography className={classes.brandSubtitle}>
         Suivi en temps réel de vos bus de transports urbains
