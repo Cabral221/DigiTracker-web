@@ -29,7 +29,7 @@ const OffresPage = () => {
 
   // CHARTE GRAPHIQUE & PRIX
   const SOLO_COLOR = '#FF9800';
-  const BASIC_COLOR = '#00853F';
+  const BASIC_COLOR = '#10B981';
   const PRO_COLOR = '#1A237E';
   const BUSINESS_COLOR = '#D32F2F';
   const GPS_UNIT_PRICE = 15000;
@@ -135,15 +135,14 @@ const OffresPage = () => {
       {/* SECTION PRINCIPALE */}
       <Box sx={{ flexGrow: 1, py: 4 }}>
         <Container maxWidth="lg">
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <LogoImage/>
+          </div>
           <Box display={isMobile ? 'block' : 'flex'} alignItems="center" justifyContent="center" flexDirection="row">
             <Box sx={{ textAlign: 'center', mb: 6 }} display={isMobile ? 'block' : 'flex'} alignItems="center" justifyContent="center">
-              <LogoImage color={activeColor} />
-              <Typography variant={isMobile ? "h4" : "h3"} fontWeight="bold" sx={{ mt: 2, mb: 1, color: activeColor }}>
-                WayTracker Manager
-                <Typography variant="h6" sx={{ color: '#555' }}>
-                  Choisissez le forfait adapté à votre flotte.
-                </Typography>
-              </Typography>
+            <Typography variant="h6" sx={{ color: '#555' }}>
+              Choisissez le forfait adapté à votre flotte.
+            </Typography>
             </Box>
           </Box>
 
