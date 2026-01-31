@@ -2,6 +2,7 @@ import {
   Route, Routes,
   useSearchParams,
 } from 'react-router-dom';
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux'; // Import combiné
 import { Navigate, useLocation } from 'react-router-dom'; // Ajout de useLocation
 import MainPage from './main/MainPage';
@@ -66,6 +67,8 @@ import AuditPage from './reports/AuditPage';
 import OffresPage from './other/OffresPage';
 import TermsPage from './other/TermsPage';
 import PrivacyPage from './other/PrivacyPage';
+// Ajout de Google Analytics import
+import ReactGA from "react-ga4";
 
 const Navigation = () => {
   const dispatch = useDispatch();
@@ -76,6 +79,14 @@ const Navigation = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const hasQueryParams = ['locale', 'token', 'uniqueId', 'openid'].some(key => searchParams.has(key));
+
+  // AJOUT DU TRACKING Google Analytics AUTOMATIQUE
+  useEffect(() => {
+    ReactGA.send({
+      hitType: "pageview",
+      page: location.pathname + location.search
+    });
+  }, [location]); // S'exécute à chaque fois que l'URL change
 
   useEffectAsync(async () => {
     if (!hasQueryParams) {
@@ -126,18 +137,18 @@ const Navigation = () => {
       {/* Pages 100% publiques (accessibles même sans session) */}
       <Route path="/terms" element={<TermsPage />} />
       <Route path="/privacy" element={<PrivacyPage />} />
-      
+
       <Route path="/login" element={shouldRedirectToMain ? <Navigate to="/" replace /> : <LoginPage />} />
       <Route path="/register" element={shouldRedirectToMain ? <Navigate to="/" replace /> : <RegisterPage />} />
       <Route path="/reset-password" element={<ResetPasswordPage />} />
       <Route path="/change-server" element={<ChangeServerPage />} />
-      
-      {/* IMPORTANT : Toutes les routes ci-dessous nécessitent que le composant App 
+
+      {/* IMPORTANT : Toutes les routes ci-dessous nécessitent que le composant App
           soit chargé pour gérer la session utilisateur (user connecté mais expiré).
       */}
       <Route path="/" element={<App />}>
         <Route index element={<MainPage />} />
-        
+
         {/* On déplace 'offres' ici pour qu'il soit un enfant de App */}
         <Route path="offres" element={<OffresPage />} />
 

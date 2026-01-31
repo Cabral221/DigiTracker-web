@@ -2,6 +2,8 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { CssBaseline, StyledEngineProvider } from '@mui/material';
+// 1. Importation de Google Analytics
+import ReactGA from "react-ga4";
 import store from './store';
 import { LocalizationProvider } from './common/components/LocalizationProvider';
 import ErrorHandler from './common/components/ErrorHandler';
@@ -11,6 +13,9 @@ import NativeInterface from './common/components/NativeInterface';
 import ServerProvider from './ServerProvider';
 import ErrorBoundary from './ErrorBoundary';
 import AppThemeProvider from './AppThemeProvider';
+
+// 2. Initialisation (Mets ton ID de mesure ici)
+ReactGA.initialize("G-S7KFNV9YNK");
 
 preloadImages();
 
